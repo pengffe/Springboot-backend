@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -99,12 +100,14 @@ public class MNQuestionController {
         return questionService.findAll(questionService.checkType(type).getClass());
     }
 
-
     /***********
      * Update
      ***********/
-
-
+    @PutMapping(value = "/{type}/{id}")
+    public ResponseEntity<JSONObject>  updateById(@PathVariable String type, @PathVariable String id, @RequestParam(value = "file", required = false) MultipartFile file){
+        String questionId = type + "-" + id;
+        return questionService.saveFileToDisk(questionId, file);
+    }
 
     /***********
      * Delete

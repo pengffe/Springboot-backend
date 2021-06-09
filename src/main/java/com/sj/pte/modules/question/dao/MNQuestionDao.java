@@ -61,6 +61,20 @@ public class MNQuestionDao {
         return mongoTemplate.remove(query, tCLass);
     }
 
+    public <T> UpdateResult updateImageById(Class<T> tCLass, String questionId, String imagePath){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("imagePath", imagePath);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateAudioById(Class<T> tCLass, String questionId, String audioPath){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("audioPath", audioPath);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
     public <T> UpdateResult updateFrequencyById(Class<T> tCLass, String id, int frequency){
         Query query = new Query(Criteria.where("questionId").is(id));
         Update update = new Update().set("frequency", frequency);

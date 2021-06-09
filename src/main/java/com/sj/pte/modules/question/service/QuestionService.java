@@ -11,8 +11,11 @@ package com.sj.pte.modules.question.service;/**
  */
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
 import com.sj.pte.modules.question.bean.MNQuestion;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,8 +39,13 @@ public interface QuestionService {
 
     <T> List<T> findAll(Class<T> tClass);
 
-
-
+    /***********
+     * Update
+     ***********/
+    /**
+     * 将音频练习文件存入服务器，并将文件路径存入数据库
+     */
+    ResponseEntity<JSONObject> saveFileToDisk(String questionId, MultipartFile file);
 
     <T> DeleteResult deleteById(Class<T> tCLass, String id);
 }
