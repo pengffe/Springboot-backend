@@ -1,0 +1,6 @@
+server:
+  servlet:
+    context-path: /api/v1
+    encoding:
+      force: true
+      charset: UTF-8
