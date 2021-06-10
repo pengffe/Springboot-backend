@@ -231,8 +231,14 @@ public class QuestionServiceImpl implements QuestionService {
             /**
              * 将生成文件路径更新到db中相对应的题目表下
              */
-            UpdateResult updateResult = mnQuestionDao.updateImageById(checkType(questionId).getClass(), questionId, uploadFile.toString());
-
+            UpdateResult updateResult;
+            if (substring.equals("mp3")){
+                System.out.println("save audio: " + substring);
+                updateResult = mnQuestionDao.updateAudioById(checkType(questionId).getClass(), questionId, uploadFile.toString());
+            }else {
+                System.out.println("save image: " + substring);
+                updateResult = mnQuestionDao.updateImageById(checkType(questionId).getClass(), questionId, uploadFile.toString());
+            }
 
             json.put("STATUS", "200");
             json.put("MSG", "上传图片成功");
