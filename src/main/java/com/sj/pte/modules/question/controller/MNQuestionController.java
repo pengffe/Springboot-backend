@@ -13,8 +13,10 @@ package com.sj.pte.modules.question.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sj.pte.modules.question.bean.MNQuestion;
+import com.sj.pte.modules.question.service.CheckService;
 import com.sj.pte.modules.question.service.QuestionServiceImpl;
 import com.sj.pte.utils.json.JSONUtil;
+import com.sj.pte.utils.upload.UploadFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +30,30 @@ import java.util.List;
  * @descrption base class for question request
  * @date 26-05-2021
  */
-
-
 @RestController
 @RequestMapping("/question")
 public class MNQuestionController {
 
     private QuestionServiceImpl questionService;
 
+    private UploadFileService uploadFileService;
+
+    private CheckService checkService;
+
+    @Autowired
+    public void setCheckService(CheckService checkService) {
+        this.checkService = checkService;
+    }
+
+    @Autowired
+    public void setUploadFileService(UploadFileService uploadFileService) {
+        this.uploadFileService = uploadFileService;
+    }
+
     @Autowired
     public void setQuestionService(QuestionServiceImpl questionService) {
         this.questionService = questionService;
     }
-
 
     /***********
      * Create
@@ -85,28 +98,27 @@ public class MNQuestionController {
         }
     }
 
-
     /***********
      * Read
      ***********/
     @GetMapping(value = "/{type}/{id}")
     public MNQuestion findById(@PathVariable String type, @PathVariable String id) {
         String questionId = type + "-" + id;
-        return questionService.findById(questionService.checkType(type).getClass(), questionId);
+        return questionService.findById(checkService.checkType(type).getClass(), questionId);
     }
 
     @GetMapping(value = "{type}")
     public List findAll(@PathVariable String type) {
-        return questionService.findAll(questionService.checkType(type).getClass());
+        return questionService.findAll(checkService.checkType(type).getClass());
     }
 
     /***********
      * Update
      ***********/
     @PutMapping(value = "/{type}/{id}")
-    public ResponseEntity<JSONObject>  updateById(@PathVariable String type, @PathVariable String id, @RequestParam(value = "file", required = false) MultipartFile file){
+    public ResponseEntity<JSONObject>  updateFileById(@PathVariable String type, @PathVariable String id, @RequestParam(value = "file", required = false) MultipartFile file){
         String questionId = type + "-" + id;
-        return questionService.saveFileToDisk(questionId, file);
+        return uploadFileService.saveFileToDisk(questionId, file, null);
     }
 
     /***********
@@ -115,12 +127,6 @@ public class MNQuestionController {
     @DeleteMapping("/{type}/{id}")
     public void deleteById(@PathVariable String type, @PathVariable String id){
         String questionId = type + "-" + id;
-        questionService.deleteById(questionService.checkType(type).getClass(), questionId);
+        questionService.deleteById(checkService.checkType(type).getClass(), questionId);
     }
-
-
-
-
-
-
 }

@@ -11,7 +11,7 @@ package com.sj.pte.modules.question.service;/**
  */
 
 
-import com.sj.pte.modules.question.bean.MNQuestion;
+import com.sj.pte.modules.question.bean.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -21,7 +21,7 @@ import java.util.List;
  * @description
  */
 @Service
-public class CheckDurationServiceImpl implements CheckDurationService {
+public class CheckServiceImpl implements CheckService {
     /**
      * triggered in findAll()
      * check updated and add attributes
@@ -56,5 +56,77 @@ public class CheckDurationServiceImpl implements CheckDurationService {
             }
         }
         return tList;
+    }
+
+    /**
+     *
+     * @param questionType "ra" or "ra-1"
+     * @return
+     */
+    @Override
+    public MNQuestion checkType(String questionType) {
+        String type  = questionType;
+        if (questionType.contains("-")){
+            type = questionType.split("-")[0];
+        }
+
+        switch (type) {
+            /**
+             * speaking
+             */
+            case ("ra"):
+                return new MNRA();
+            case ("rs"):
+                return new MNRS();
+            case ("rl"):
+                return new MNRL();
+            case ("di"):
+                return new MNDI();
+            case ("asq"):
+                return new MNASQ();
+
+            /**
+             * reading
+             */
+            case ("rmcs"):
+                return new MNRMCS();
+            case("rmcm"):
+                return new MNRMCM();
+            case("ro"):
+                return new MNRO();
+            case("rfib"):
+                return new MNRFIB();
+            case("rwfib"):
+                return new MNRWFIB();
+
+            /**
+             * listening
+             */
+            case("fib"):
+                return new MNFIB();
+            case("hcs"):
+                return new MNHCS();
+            case("hiw"):
+                return new MNHIW();
+            case("mcm"):
+                return new MNMCM();
+            case("mcs"):
+                return new MNMCS();
+            case("smw"):
+                return new MNSMW();
+            case("sst"):
+                return new MNSST();
+            case("wfd"):
+                return new MNWFD();
+
+            /**
+             * writing
+             */
+            case("swt"):
+                return new MNSWT();
+            case("we"):
+                return new MNWE();
+        }
+        return new MNQuestion();
     }
 }

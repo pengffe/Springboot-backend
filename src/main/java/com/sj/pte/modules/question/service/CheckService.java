@@ -18,7 +18,9 @@ import java.util.List;
 /**
  * @description
  */
-public interface CheckDurationService {
+public interface CheckService {
 
     <T extends MNQuestion> List<T> checkDuration(List<T> tClass);
+
+    MNQuestion checkType (String questionType);
 }

@@ -76,6 +76,4 @@ public class MNQuestion extends MNPost {
      * Analysis Information
      **********************/
     private String lessonPath;
-
-
 }

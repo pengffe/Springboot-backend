@@ -1,6 +1,6 @@
 package com.sj.pte.modules.user;
 
-import com.sj.pte.modules.practice.MNPractice;
+import com.sj.pte.modules.practice.bean.MNPractice;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

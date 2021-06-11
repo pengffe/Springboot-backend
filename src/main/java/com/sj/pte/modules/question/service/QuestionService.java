@@ -24,13 +24,10 @@ import java.util.List;
  */
 public interface QuestionService {
 
-
     /***********
      * Create
      ***********/
     <T extends MNQuestion> T save(T t);
-
-
 
     /***********
      * Read
@@ -42,10 +39,6 @@ public interface QuestionService {
     /***********
      * Update
      ***********/
-    /**
-     * 将音频练习文件存入服务器，并将文件路径存入数据库
-     */
-    ResponseEntity<JSONObject> saveFileToDisk(String questionId, MultipartFile file);
 
     <T> DeleteResult deleteById(Class<T> tCLass, String id);
 }

@@ -84,8 +84,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints.tokenStore(tokenStore())
                 .authenticationManager(authenticationManager)
-                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST)
-        ;
+                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
     }
 
     @Override

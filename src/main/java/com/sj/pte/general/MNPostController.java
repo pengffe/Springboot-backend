@@ -26,10 +26,8 @@ import java.util.Optional;
  * @description
  */
 @RestController
+@RequestMapping
 public class MNPostController {
-    @Autowired
-    MongoTemplate mongoTemplate;
-
 
     private MNPostDao mnPostDao;
     @Autowired

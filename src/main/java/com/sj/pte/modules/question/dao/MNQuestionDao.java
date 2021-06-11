@@ -44,7 +44,6 @@ public class MNQuestionDao {
         }
     }
 
-
     public <T> T findById(Class<T> tCLass, String id) {
         Query query = new Query(Criteria.where("questionId").is(id));
         return mongoTemplate.findOne(query, tCLass);
@@ -53,8 +52,6 @@ public class MNQuestionDao {
     public <T> List<T> findAll(Class<T> tClass) {
         return mongoTemplate.findAll(tClass);
     }
-
-
 
     public <T> DeleteResult deleteById(Class<T> tCLass, String id) {
         Query query = new Query(Criteria.where("questionId").is(id));
@@ -71,6 +68,13 @@ public class MNQuestionDao {
     public <T> UpdateResult updateAudioById(Class<T> tCLass, String questionId, String audioPath){
         Query query = new Query(Criteria.where("questionId").is(questionId));
         Update update = new Update().set("audioPath", audioPath);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateLessonById(Class<T> tCLass, String questionId, String filePath){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("lessonPath", filePath);
 
         return mongoTemplate.updateFirst(query, update, tCLass);
     }

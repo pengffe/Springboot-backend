@@ -1,14 +1,16 @@
-package com.sj.pte.modules.comment;
+package com.sj.pte.modules.practice.bean;
 
+import com.sj.pte.general.MNPost;
 import com.sj.pte.utils.autoIncKey.AutoIncKey;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
- * Created by TUTEHUB on 2021/6/1 11:52 AM.
+ * Created by TUTEHUB on 2021/6/3 12:30 AM.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -21,12 +23,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("MNComment")
-public class MNComment {
-    @Id
-    @AutoIncKey
-    private Long id;
-    String questionId;
-    String userId;
-    String message;
+@Document(collection = "MNPractice")
+public class MNPractice extends MNPost {
+
+    private String questionId;
+    private String answer;//address or text
+
+    private String userId;
+
+//    public MNPractice(String questionId, String answer, String username) {
+//        this.questionId = questionId;
+//        this.answer = answer;
+//        this.username = username;
+//    }
+
 }

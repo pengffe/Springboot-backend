@@ -36,8 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         System.out.println("创建两个内存用户");
         // 创建两个内存用户
-        manager.createUser(User.withUsername("admin").password("123456").authorities("USER").build());
-        manager.createUser(User.withUsername("lin").password("123456").authorities("USER").build());
+//        manager.createUser(User.withUsername("admin").password("123456").authorities("USER").build());
+//        manager.createUser(User.withUsername("lin").password("123456").authorities("USER").build());
         return manager;
     }
 
