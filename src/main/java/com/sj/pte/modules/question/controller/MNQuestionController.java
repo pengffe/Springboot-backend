@@ -18,6 +18,10 @@ import com.sj.pte.modules.question.service.QuestionServiceImpl;
 import com.sj.pte.utils.json.JSONUtil;
 import com.sj.pte.utils.upload.UploadFileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -107,16 +111,31 @@ public class MNQuestionController {
         return questionService.findById(checkService.checkType(type).getClass(), questionId);
     }
 
-    @GetMapping(value = "{type}")
+    @GetMapping(value = "/{type}")
     public List findAll(@PathVariable String type) {
         return questionService.findAll(checkService.checkType(type).getClass());
+    }
+
+    @GetMapping(value = "/{type}/{pageNum}/{pageSize}/{sortType}")
+    public Page findAllByPage(@PathVariable String type,
+                              @PathVariable int pageNum,
+                              @PathVariable int pageSize,
+                              @PathVariable String sortType) {
+        return questionService.findAllByPage(checkService.checkType(type).getClass(), pageNum, pageSize, sortType);
+    }
+
+    @GetMapping(value = "/count/{type}")
+    public Long findCountByType(@PathVariable String type){
+        return questionService.findCount(checkService.checkType(type).getClass());
     }
 
     /***********
      * Update
      ***********/
     @PutMapping(value = "/{type}/{id}")
-    public ResponseEntity<JSONObject>  updateFileById(@PathVariable String type, @PathVariable String id, @RequestParam(value = "file", required = false) MultipartFile file){
+    public ResponseEntity<JSONObject> updateFileById(@PathVariable String type,
+                                                     @PathVariable String id,
+                                                     @RequestParam(value = "file", required = false) MultipartFile file){
         String questionId = type + "-" + id;
         return uploadFileService.saveFileToDisk(questionId, file, null);
     }

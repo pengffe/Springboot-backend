@@ -11,25 +11,15 @@ package com.sj.pte.modules.question.service;/**
  */
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.practice.bean.MNPractice;
-import com.sj.pte.modules.practice.dao.PracticeDao;
 import com.sj.pte.modules.question.bean.*;
 import com.sj.pte.modules.question.dao.MNQuestionDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-
 
 /**
  * @description
@@ -86,6 +76,16 @@ public class QuestionServiceImpl implements QuestionService {
     public <T> List<T> findAll(Class<T> tClass) {
         List list = mnQuestionDao.findAll(tClass);
         return checkService.checkDuration(list);
+    }
+
+    @Override
+    public <T> Page<T> findAllByPage(Class<T> tClass, int pageNum, int pageSize, String sortType){
+        return mnQuestionDao.findAllByPage(tClass, pageNum - 1, pageSize, sortType);
+    }
+
+    @Override
+    public <T> Long findCount(Class<T> tClass){
+        return mnQuestionDao.findCount(tClass);
     }
 
     /***********

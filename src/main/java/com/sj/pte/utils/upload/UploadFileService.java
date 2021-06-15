@@ -114,7 +114,7 @@ public class UploadFileService {
             if(!uploadFile.getParentFile().exists()){
                 //注意，判断父级路径是否存在
                 boolean mkdirs = uploadFile.getParentFile().mkdirs();
-                if (mkdirs == false){
+                if (!mkdirs){
                     json.put("RESULT", "FAIL TO CREATE FOLDER");
                 }
             }

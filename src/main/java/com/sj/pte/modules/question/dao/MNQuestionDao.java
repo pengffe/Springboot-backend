@@ -14,6 +14,7 @@ package com.sj.pte.modules.question.dao;/**
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -51,6 +52,30 @@ public class MNQuestionDao {
 
     public <T> List<T> findAll(Class<T> tClass) {
         return mongoTemplate.findAll(tClass);
+    }
+
+    public <T> Page<T> findAllByPage(Class<T> tClass, int pageNum, int pageSize, String sortType) {
+        Sort sort;
+        if (sortType.equals("ASC")){
+             sort = Sort.by(Sort.Direction.ASC, "id");
+        }
+        else {
+            sort = Sort.by(Sort.Direction.DESC, "frequency");
+        }
+
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        Query query = new Query();
+
+        long count = mongoTemplate.count(query, tClass);
+        //查询结果集
+        List<T> questionList= mongoTemplate.find(query.with(pageable), tClass);
+        Page<T> questionPage = new PageImpl(questionList, pageable, count);
+        return questionPage;
+    }
+
+    public <T> Long findCount(Class<T> tclass){
+        Query query = new Query(new Criteria());
+        return mongoTemplate.count(query, tclass);
     }
 
     public <T> DeleteResult deleteById(Class<T> tCLass, String id) {

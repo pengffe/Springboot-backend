@@ -14,6 +14,7 @@ package com.sj.pte.modules.question.service;/**
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
 import com.sj.pte.modules.question.bean.MNQuestion;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,10 @@ public interface QuestionService {
     <T> T findById(Class<T> tCLass, String questionId);
 
     <T> List<T> findAll(Class<T> tClass);
+
+    <T> Page<T> findAllByPage(Class<T> tClass, int pageNum, int pageSize, String sortType);
+
+    <T> Long findCount(Class<T> tClass);
 
     /***********
      * Update
