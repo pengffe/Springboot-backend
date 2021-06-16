@@ -1,4 +1,4 @@
-package com.sj.pte.modules.user;
+package com.sj.pte.modules.authServer.entity;
 
 /**
  * Created by TUTEHUB on 2021-06-01 12:55.
