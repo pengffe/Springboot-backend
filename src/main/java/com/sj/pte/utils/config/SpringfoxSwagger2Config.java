@@ -38,6 +38,7 @@ import static springfox.documentation.builders.PathSelectors.*;
 @EnableSwagger2
 //包扫描，在此包下的Controler都会被纳入swagger接口文档生成的范围，这里也可以配置类扫描，同时也可以在这个配置类里面细化过滤规则
 @ComponentScan(basePackages = "com.sj.pte.modules.question.controller")
+@ComponentScan(basePackages = "com.sj.pte.modules.authServer.controller")
 public class SpringfoxSwagger2Config {
 
     //组织Docket对象，翻译过来就是摘要的意思，它是生成API文档的核心对象，里面配置一些必要的信息
@@ -81,12 +82,6 @@ public class SpringfoxSwagger2Config {
         return or(
                 regex("/user.*"),
                 regex("/role.*"),
-                regex("/ra.*"),
-                regex("/rs.*"),
-                regex("/rl.*"),
-                regex("/di.*"),
-                regex("/asq.*"),
-                regex("/rmcs.*"),
                 regex("/comment.*"),
                 regex("/question.*"),
                 regex("/practice.*"),
