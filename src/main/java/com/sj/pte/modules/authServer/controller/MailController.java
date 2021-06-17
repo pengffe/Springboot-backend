@@ -18,20 +18,10 @@ import org.springframework.web.bind.annotation.*;
  * @descrption verify mail
  */
 @RestController
-@RequestMapping("/email")
+@RequestMapping("")
 public class MailController {
 
     @Autowired
     private MailService mailService;
-
-    @GetMapping(value = "/{email}/{code}")
-    public boolean emailVerify(@PathVariable("code")String code, @PathVariable("email")String email) {
-        return mailService.emailVerify(email, code);
-    }
-
-    @PostMapping("/{email}")
-    public boolean resendEmail(@PathVariable String email){
-        return mailService.sendEmail(email);
-    }
 
 }

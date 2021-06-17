@@ -67,4 +67,17 @@ public class UserDao {
 
         return mongoTemplate.updateFirst(query, update, JwtUser.class);
     }
+
+    public boolean enableUser(String email){
+        Query query = new Query(Criteria.where("email").is(email));
+        Update update = new Update().set("enabled", true);
+
+        UpdateResult updateResult = mongoTemplate.updateFirst(query, update, JwtUser.class);
+        if (updateResult.getModifiedCount() == 1 && updateResult.getMatchedCount() == 1){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

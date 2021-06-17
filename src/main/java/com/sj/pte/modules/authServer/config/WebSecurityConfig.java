@@ -27,6 +27,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String[] SWAGGER_WHITELIST = {
+
+            // -- swagger ui
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**",
+    };
+
     @Override
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -41,8 +50,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/oauth/**", "login/**", "/register/**", "/swagger-ui.html/**")
+                .antMatchers("/oauth/**", "login/**", "/register/**")
                 .permitAll()
+                .antMatchers(SWAGGER_WHITELIST).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

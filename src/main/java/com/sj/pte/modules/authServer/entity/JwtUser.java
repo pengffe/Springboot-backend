@@ -47,8 +47,7 @@ public class JwtUser implements UserDetails {
     private String phone;
     private String weChat;
     private String code;
-    private Date registerTime;
-
+    private Date registerTime = new Date();
 
     public JwtUser(
             String id,

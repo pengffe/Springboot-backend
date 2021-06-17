@@ -15,6 +15,7 @@ package com.sj.pte.modules.authServer.service;/**
  */
 
 import cn.hutool.core.util.RandomUtil;
+import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.authServer.dao.UserDao;
 import com.sj.pte.modules.authServer.entity.JwtUser;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +59,7 @@ public class UserService implements UserDetailsService {
             }
             if (null != user){
                 String pass = new BCryptPasswordEncoder().encode(user.getPassword());
-                return new JwtUser(user.getId(), username, pass,"USER", true);
+                return new JwtUser(user.getId(), username, pass,user.getAuthorities().toString(), user.isEnabled());
             }
             else{
                 throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
@@ -75,7 +76,7 @@ public class UserService implements UserDetailsService {
         }
 
         //创建用户
-        JwtUser user = new JwtUser(RandomUtil.randomString(8), username, password,"USER", true);
+        JwtUser user = new JwtUser(RandomUtil.randomString(8), username, password,"USER", false);
 
         if (contact.contains("@")){
             if (null != userDao.findByEmail(contact)){
@@ -105,6 +106,14 @@ public class UserService implements UserDetailsService {
         catch (Exception e){
             return new ResponseEntity<>("Fail to reset password.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    public String findEmailByUsername(String username){
+        return userDao.findByUsername(username).getEmail();
+    }
+    
+    public boolean activateUser(String email){
+        return userDao.enableUser(email);
     }
 
 }
