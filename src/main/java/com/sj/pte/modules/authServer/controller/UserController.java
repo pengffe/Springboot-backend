@@ -58,7 +58,7 @@ public class UserController {
     /**
      * 重新发送邮件
      */
-    @PostMapping("register/{email}")
+    @PostMapping("/register/{email}")
     public boolean resendEmail(@PathVariable String email){
         return mailService.sendVerifyEmail(email);
     }

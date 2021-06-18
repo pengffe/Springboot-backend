@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 /**
@@ -111,16 +112,16 @@ public class MNQuestionController {
         return questionService.findById(checkService.checkType(type).getClass(), questionId);
     }
 
-    @GetMapping(value = "/{type}")
-    public List findAll(@PathVariable String type) {
-        return questionService.findAll(checkService.checkType(type).getClass());
-    }
+//    @GetMapping(value = "/{type}")
+//    public List findAll(@PathVariable String type) {
+//        return questionService.findAll(checkService.checkType(type).getClass());
+//    }
 
-    @GetMapping(value = "/{type}/{pageNum}/{pageSize}/{sortType}")
+    @GetMapping(value = "/{type}")
     public Page findAllByPage(@PathVariable String type,
-                              @PathVariable int pageNum,
-                              @PathVariable int pageSize,
-                              @PathVariable String sortType) {
+                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                              @RequestParam(value = "pageSize", defaultValue = "0")  int pageSize,
+                              @RequestParam(value = "sortType", defaultValue = "ASC")  String sortType) {
         return questionService.findAllByPage(checkService.checkType(type).getClass(), pageNum, pageSize, sortType);
     }
 

@@ -63,19 +63,23 @@ public class MNQuestionDao {
             sort = Sort.by(Sort.Direction.DESC, "frequency");
         }
 
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
         Query query = new Query();
-
         long count = mongoTemplate.count(query, tClass);
+        if (0 == pageSize){
+            pageSize = (int) count;
+        }
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+
+
         //查询结果集
         List<T> questionList= mongoTemplate.find(query.with(pageable), tClass);
         Page<T> questionPage = new PageImpl(questionList, pageable, count);
         return questionPage;
     }
 
-    public <T> Long findCount(Class<T> tclass){
-        Query query = new Query(new Criteria());
-        return mongoTemplate.count(query, tclass);
+    public <T> Long findCount(Class<T> tClass){
+        Query query = new Query();
+        return mongoTemplate.count(query, tClass);
     }
 
     public <T> DeleteResult deleteById(Class<T> tCLass, String id) {

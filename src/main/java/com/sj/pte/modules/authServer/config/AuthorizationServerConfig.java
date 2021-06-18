@@ -60,7 +60,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .redirectUris("http://www.baidu.com")
                 //授权范围
                 .scopes("all")
-                .accessTokenValiditySeconds(60 * 3)
+                .accessTokenValiditySeconds(60 * 60 * 5)
                 .refreshTokenValiditySeconds(60 * 60 * 24 * 3)
                 /**
                  * 授权类型
