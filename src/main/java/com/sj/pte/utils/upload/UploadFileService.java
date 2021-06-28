@@ -11,6 +11,8 @@ package com.sj.pte.utils.upload;/**
 
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.UpdateResult;
+import com.sj.pte.modules.jobApplication.MNApplicant;
+import com.sj.pte.modules.jobApplication.MNApplicantDao;
 import com.sj.pte.modules.practice.bean.MNPractice;
 import com.sj.pte.modules.practice.dao.PracticeDao;
 import com.sj.pte.modules.question.dao.MNQuestionDao;
@@ -45,8 +47,17 @@ public class UploadFileService {
     @Value("${user.fileURLPath}")
     private String userFileURLPath;
 
+    @Value("${applicant.resumePath}")
+    private String resumePath;
+
+    @Value("${applicant.resumeURLPath}")
+    private String resumeURLPath;
+
     @Autowired
     PracticeDao practiceDao;
+
+    @Autowired
+    MNApplicantDao applicantDao;
 
     private MNQuestionDao mnQuestionDao;
 
@@ -166,5 +177,70 @@ public class UploadFileService {
             json.put("MSG", "FAIL TO SAVE FILE(need to create folder in advance)");
             return new ResponseEntity<>(json, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+
+    /************
+     *
+     * 将前端传来的文件保存到服务器磁盘中，并将该路径保存到数据库相应的属性下。
+     * @return
+     */
+    public ResponseEntity<JSONObject> saveResumeToDisk(MNApplicant applicant, MultipartFile file){
+
+        JSONObject json = new JSONObject();
+        if(file==null){
+            json.put("STATUS", "ERROR");
+            json.put("MSG", "Fail to upload，upload file is null.");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
+        //获取上传文件名,包含后缀
+        String originalFilename = file.getOriginalFilename();
+        //获取后缀
+        String substring;
+        try {
+            substring = originalFilename.substring(originalFilename.lastIndexOf("."));
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("STATUS", "ERROR");
+            json.put("MSG", "Illegal file format.");
+            return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+        }
+
+        String applicantName = applicant.getFirstName() + " " + applicant.getLastName();
+        //保存的文件名
+        String dFileName = applicantName + "-" + UUID.randomUUID() + substring;
+
+
+        //服务器磁盘存储路径
+        String path = resumePath + applicantName + "/";
+        //服务器url访问路径
+        String URLPath = resumeURLPath + applicantName + "/" + dFileName;
+
+        //生成保存文件
+        File uploadFile = new File(path + dFileName);
+        if(!uploadFile.getParentFile().exists()){
+            //注意，判断父级路径是否存在
+            boolean mkdirs = uploadFile.getParentFile().mkdirs();
+            if (!mkdirs){
+                json.put("RESULT", "FAIL TO CREATE FOLDER");
+            }
+        }
+
+        //将上传文件保存到路径
+        try {
+            file.transferTo(uploadFile);
+            applicant.setCVPath(URLPath);
+        } catch (IOException e) {
+            json.put("STATUS", "ERROR");
+            json.put("MSG", "FAIL TO SAVE FILE(need to create folder in advance)");
+            return new ResponseEntity<>(json, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        MNApplicant result = applicantDao.save(applicant);
+        json.put("Result", result.toString());
+        json.put("STATUS", "200");
+        json.put("MSG", "APPLICATION SUCCESS.");
+        return new ResponseEntity<>(json, HttpStatus.OK);
     }
 }

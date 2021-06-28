@@ -33,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/v2/api-docs",
-            "/webjars/**",
+            "/webjars/**"
     };
 
     @Override
@@ -50,7 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/oauth/**", "login/**", "/register/**")
+                .antMatchers("/oauth/**", "login/**", "/register/**", "/**", "apply/**")
                 .permitAll()
                 .antMatchers(SWAGGER_WHITELIST).permitAll()
                 .anyRequest()
