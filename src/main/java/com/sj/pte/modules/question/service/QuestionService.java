@@ -14,6 +14,7 @@ package com.sj.pte.modules.question.service;/**
 import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
 import com.sj.pte.modules.question.bean.MNQuestion;
+import com.sj.pte.modules.question.bean.MNQuestionRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,8 @@ public interface QuestionService {
      * Create
      ***********/
     <T extends MNQuestion> T save(T t);
+
+    MNQuestion readRequestJSONToObject(String type, MNQuestionRequest mnQuestionRequest);
 
     /***********
      * Read

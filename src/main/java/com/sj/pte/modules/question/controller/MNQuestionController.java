@@ -12,7 +12,9 @@ package com.sj.pte.modules.question.controller;
  */
 
 import com.alibaba.fastjson.JSONObject;
+import com.sj.pte.modules.question.bean.MNASQ;
 import com.sj.pte.modules.question.bean.MNQuestion;
+import com.sj.pte.modules.question.bean.MNQuestionRequest;
 import com.sj.pte.modules.question.service.CheckService;
 import com.sj.pte.modules.question.service.QuestionServiceImpl;
 import com.sj.pte.utils.json.JSONUtil;
@@ -63,7 +65,7 @@ public class MNQuestionController {
     /***********
      * Create
      ***********/
-    @PostMapping(value = "/{type}/{id}")
+    @PostMapping(value = "/local/{type}/{id}")
     public ResponseEntity<JSONObject> addOne(@PathVariable String type, @PathVariable int id) {
 
         String questionId = type + "-" + id;
@@ -87,7 +89,7 @@ public class MNQuestionController {
         }
     }
 
-    @PostMapping(value = "{type}")
+    @PostMapping(value = "/local/{type}")
     public ResponseEntity<JSONObject> addAll(@PathVariable String type) {
         JSONObject json = new JSONObject();
         int i = 228;
@@ -101,6 +103,19 @@ public class MNQuestionController {
             }
             i++;
         }
+    }
+
+    @PostMapping(value = "/{type}")
+    public ResponseEntity<String> addOneByPostman(@RequestBody MNQuestionRequest mnQuestionRequest, @PathVariable String type){
+        MNQuestion mnQuestion = questionService.readRequestJSONToObject(type, mnQuestionRequest);
+        if (null == mnQuestion){
+            return new ResponseEntity<>("URL TYPE IS NOT SAME AS JSON TYPE", HttpStatus.CONFLICT);
+        }
+        if (null != questionService.save(mnQuestion)){
+            System.out.println(mnQuestionRequest.toString());
+            return new ResponseEntity<>("SUCCESS TO ADD", HttpStatus.OK);
+        }
+        else return new ResponseEntity<>("INSTANCE EXITS", HttpStatus.CREATED);
     }
 
     /***********

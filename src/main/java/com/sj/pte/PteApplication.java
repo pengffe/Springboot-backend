@@ -26,11 +26,6 @@ public class PteApplication {
 	    SpringApplication.run(PteApplication.class, args);
 	}
 
-	@Bean
-	RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
-
 
 	@GetMapping("/good")
 	public void good() {

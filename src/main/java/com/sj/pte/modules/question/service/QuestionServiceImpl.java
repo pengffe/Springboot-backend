@@ -50,7 +50,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public <T extends MNQuestion> T save(T t) {
         if (null == t){
-            System.out.println("Fail to find the file!");
+            System.out.println("Fail to find local file or request json is null!");
             return null;
         }
 
@@ -62,6 +62,137 @@ public class QuestionServiceImpl implements QuestionService {
         else {
             return mnQuestionDao.save(t);
         }
+    }
+
+    /**
+     * 根据postman传来的json对象，生成相应题目的实例，用于存入db
+     * @param type
+     * @param mnQuestionRequest
+     * @return
+     */
+    @Override
+    public MNQuestion readRequestJSONToObject(String type, MNQuestionRequest mnQuestionRequest){
+
+        // unique
+        MNQuestion mnQuestion = new MNQuestion();
+        String audioPath;
+        String imagePath;
+        String question;
+        List<String> options;
+        List<String> sampleAnswers;
+        if (!type.equals(mnQuestionRequest.getQuestionId().split("-")[0])){
+            return null;
+        }
+        switch (type) {
+            /**
+             * speaking
+             */
+            case ("ra"):
+                mnQuestion = new MNRA();
+                break;
+            case ("rs"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNRS(audioPath);
+                break;
+            case ("rl"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                imagePath = mnQuestionRequest.getImagePath();
+                mnQuestion = new MNRL(audioPath, imagePath);
+                break;
+            case ("di"):
+                imagePath = mnQuestionRequest.getImagePath();
+                sampleAnswers = mnQuestionRequest.getSampleAnswers();
+                mnQuestion = new MNDI(imagePath, sampleAnswers);
+                break;
+            case ("asq"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNASQ(audioPath);
+                break;
+
+            /**
+             * reading
+             */
+            case ("rmcs"):
+                question = mnQuestionRequest.getQuestion();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNRMCS(question, options);
+                break;
+            case("rmcm"):
+                question = mnQuestionRequest.getQuestion();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNRMCM(question, options);
+                break;
+            case("ro"):
+                mnQuestion = new MNRO();
+                break;
+            case("rfib"):
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNRFIB(options);
+                break;
+            case("rwfib"):
+                mnQuestion = new MNRWFIB();
+                break;
+
+            /**
+             * listening
+             */
+            case("fib"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNFIB(audioPath);
+                break;
+            case("hcs"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNHCS(audioPath, options);
+                break;
+            case("hiw"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNHIW(audioPath);
+                break;
+            case("wfd"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNWFD(audioPath);
+                break;
+            case("mcm"):
+                question = mnQuestionRequest.getQuestion();
+                audioPath = mnQuestionRequest.getAudioPath();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNMCM(question, audioPath, options);
+                break;
+            case("mcs"):
+                question = mnQuestionRequest.getQuestion();
+                audioPath = mnQuestionRequest.getAudioPath();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNMCS(question, audioPath, options);
+                break;
+            case("smw"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                options = mnQuestionRequest.getOptions();
+                mnQuestion = new MNSMW(audioPath, options);
+                break;
+            case("sst"):
+                audioPath = mnQuestionRequest.getAudioPath();
+                mnQuestion = new MNSST(audioPath);
+                break;
+
+            /**
+             * writing
+             */
+            case("swt"):
+                mnQuestion = new MNSWT();
+                break;
+            case("we"):
+                mnQuestion = new MNWE();
+                break;
+        }
+
+        // common
+        mnQuestion.setQuestionId(mnQuestionRequest.getQuestionId());
+        mnQuestion.setTitle(mnQuestionRequest.getTitle());
+        mnQuestion.setContent(mnQuestionRequest.getContent());
+        mnQuestion.setLessonPath(mnQuestionRequest.getLessonPath());
+
+        return mnQuestion;
     }
 
     /***********
