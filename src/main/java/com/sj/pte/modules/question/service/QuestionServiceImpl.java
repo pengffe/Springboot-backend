@@ -12,8 +12,10 @@ package com.sj.pte.modules.question.service;/**
 
 
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.question.bean.*;
 import com.sj.pte.modules.question.dao.MNQuestionDao;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -217,6 +219,19 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public <T> Long findCount(Class<T> tClass){
         return mnQuestionDao.findCount(tClass);
+    }
+
+
+    @Override
+    public <T> UpdateResult updateById(Class<T> tClass, String id, MNQuestionRequest mnQuestionRequest){
+        UpdateResult updateResult = null;
+        if(null != mnQuestionRequest.getAudioPath()){
+            updateResult = mnQuestionDao.updateAudioById(tClass, id, mnQuestionRequest.getAudioPath());
+        }
+        else if(null != mnQuestionRequest.getImagePath()){
+            updateResult = mnQuestionDao.updateImageById(tClass, id, mnQuestionRequest.getImagePath());
+        }
+        return updateResult;
     }
 
     /***********

@@ -156,6 +156,13 @@ public class MNQuestionController {
         return uploadFileService.saveFileToDisk(questionId, file, null);
     }
 
+    @PatchMapping(value = "/{type}/{id}")
+    public void updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
+                                @PathVariable String type,
+                                @PathVariable String id){
+        questionService.updateById(checkService.checkType(type).getClass(), id, mnQuestionRequest);
+    }
+
     /***********
      * Delete
      ***********/

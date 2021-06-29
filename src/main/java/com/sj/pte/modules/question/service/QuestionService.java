@@ -9,15 +9,11 @@ package com.sj.pte.modules.question.service;/**
  * Technique Support: jobyme88.com
  * Contact: noreply@fengcaoculture.com
  */
-
-
-import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.question.bean.MNQuestion;
 import com.sj.pte.modules.question.bean.MNQuestionRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -47,6 +43,7 @@ public interface QuestionService {
     /***********
      * Update
      ***********/
+    <T> UpdateResult updateById(Class<T> tClass, String id, MNQuestionRequest mnQuestionRequest);
 
     <T> DeleteResult deleteById(Class<T> tCLass, String id);
 }
