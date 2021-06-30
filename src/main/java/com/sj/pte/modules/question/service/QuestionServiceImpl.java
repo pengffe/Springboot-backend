@@ -159,13 +159,13 @@ public class QuestionServiceImpl implements QuestionService {
                 question = mnQuestionRequest.getQuestion();
                 audioPath = mnQuestionRequest.getAudioPath();
                 options = mnQuestionRequest.getOptions();
-                mnQuestion = new MNMCM(question, audioPath, options);
+                mnQuestion = new MNMCM(audioPath, question, options);
                 break;
             case("mcs"):
                 question = mnQuestionRequest.getQuestion();
                 audioPath = mnQuestionRequest.getAudioPath();
                 options = mnQuestionRequest.getOptions();
-                mnQuestion = new MNMCS(question, audioPath, options);
+                mnQuestion = new MNMCS(audioPath, question, options);
                 break;
             case("smw"):
                 audioPath = mnQuestionRequest.getAudioPath();
@@ -231,44 +231,44 @@ public class QuestionServiceImpl implements QuestionService {
         if(null != mnQuestionRequest.getTitle()){
             updateResult = mnQuestionDao.updateTitleById(tClass, id, mnQuestionRequest.getTitle());
         }
-        else if(null != mnQuestionRequest.getContent()){
+        if(null != mnQuestionRequest.getContent()){
             updateResult = mnQuestionDao.updateContentById(tClass, id, mnQuestionRequest.getContent());
             isInfoUpdate = true;
         }
-        else if(mnQuestionRequest.isVerified()){
+        if(mnQuestionRequest.isVerified()){
             updateResult = mnQuestionDao.updateVerifiedById(tClass, id, true);
         }
-        else if(mnQuestionRequest.isPredicted()){
+        if(mnQuestionRequest.isPredicted()){
             updateResult = mnQuestionDao.updatePredictedById(tClass, id, true);
         }
-        else if(0 != mnQuestionRequest.getFrequency()){
+        if(0 != mnQuestionRequest.getFrequency()){
             updateResult = mnQuestionDao.updateFrequencyById(tClass, id, mnQuestionRequest.getFrequency());
         }
-        else if(null != mnQuestionRequest.getLevel()){
+        if(null != mnQuestionRequest.getLevel()){
             updateResult = mnQuestionDao.updateLevelById(tClass, id, mnQuestionRequest.getLevel());
         }
-        else if(null != mnQuestionRequest.getTestDate()){
+        if(null != mnQuestionRequest.getTestDate()){
             updateResult = mnQuestionDao.updateTestDateById(tClass, id, mnQuestionRequest.getTestDate());
         }
-        else if(null != mnQuestionRequest.getSource()){
+        if(null != mnQuestionRequest.getSource()){
             updateResult = mnQuestionDao.updateSourceById(tClass, id, mnQuestionRequest.getSource());
         }
-        else if(null != mnQuestionRequest.getLessonPath()){
+        if(null != mnQuestionRequest.getLessonPath()){
             updateResult = mnQuestionDao.updateLessonById(tClass, id, mnQuestionRequest.getLessonPath());
         }
-        else if(null != mnQuestionRequest.getAudioPath()){
+        if(null != mnQuestionRequest.getAudioPath()){
             updateResult = mnQuestionDao.updateAudioById(tClass, id, mnQuestionRequest.getAudioPath());
             isInfoUpdate = true;
         }
-        else if(null != mnQuestionRequest.getImagePath()){
+        if(null != mnQuestionRequest.getImagePath()){
             updateResult = mnQuestionDao.updateImageById(tClass, id, mnQuestionRequest.getImagePath());
             isInfoUpdate = true;
         }
-        else if(null != mnQuestionRequest.getOptions()){
+        if(null != mnQuestionRequest.getOptions()){
             updateResult = mnQuestionDao.updateOptionsById(tClass, id, mnQuestionRequest.getOptions());
             isInfoUpdate = true;
         }
-        else if(null != mnQuestionRequest.getQuestion()){
+        if(null != mnQuestionRequest.getQuestion()){
             updateResult = mnQuestionDao.updateQuestionById(tClass, id, mnQuestionRequest.getQuestion());
             isInfoUpdate = true;
         }

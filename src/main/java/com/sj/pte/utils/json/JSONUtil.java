@@ -173,13 +173,13 @@ public class JSONUtil {
                 question = ((String) jsonObj.get("question"));
                 audioPath = ((String) jsonObj.get("audioPath"));
                 options = ((List<String>) jsonObj.get("options"));
-                mnQuestion = new MNMCM(question, audioPath, options);
+                mnQuestion = new MNMCM(audioPath, question, options);
                 break;
             case("mcs"):
                 question = ((String) jsonObj.get("question"));
                 audioPath = ((String) jsonObj.get("audioPath"));
                 options = ((List<String>) jsonObj.get("options"));
-                mnQuestion = new MNMCS(question, audioPath, options);
+                mnQuestion = new MNMCS(audioPath, question, options);
                 break;
             case("smw"):
                 audioPath = ((String) jsonObj.get("audioPath"));
