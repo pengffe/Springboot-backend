@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MNQuestionRequest extends MNQuestion {
+    private Date testDate;
     private String audioPath;
     private String imagePath;
     private List<String>  sampleAnswers;

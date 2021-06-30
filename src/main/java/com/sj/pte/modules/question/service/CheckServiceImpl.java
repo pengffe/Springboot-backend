@@ -12,6 +12,8 @@ package com.sj.pte.modules.question.service;/**
 
 
 import com.sj.pte.modules.question.bean.*;
+import com.sj.pte.modules.question.dao.MNQuestionDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -22,6 +24,10 @@ import java.util.List;
  */
 @Service
 public class CheckServiceImpl implements CheckService {
+
+    @Autowired
+    private MNQuestionDao mnQuestionDao;
+
     /**
      * triggered in findAll()
      * check updated and add attributes
@@ -32,9 +38,10 @@ public class CheckServiceImpl implements CheckService {
         for (T item: tList) {
             /* modify add */
             long insertPeriod = 0;
-            if (item.getPostDate() != null){
+            if (item.getPostDate() != null && item.isAdd()){
                 insertPeriod =  (new Date().getTime() - item.getPostDate().getTime())/(3600000 * 24);
                 if (insertPeriod > 7) {
+                    mnQuestionDao.updateNewById(item.getClass(), item.getQuestionId(), false);
                     item.setAdd(false);
                 }
                 System.out.println("距初次创建时的时间：" + insertPeriod);
@@ -45,9 +52,10 @@ public class CheckServiceImpl implements CheckService {
 
             /* modify updated */
             long updatePeriod = 0;
-            if(item.getModifiedDate() != null){
+            if(item.getModifiedDate() != null && item.isUpdated()){
                 updatePeriod =  (new Date().getTime() - item.getModifiedDate().getTime())/(3600000 * 24);
                 if (updatePeriod > 7){
+                    mnQuestionDao.updateUpdatedById(item.getClass(), item.getQuestionId(), false);
                     item.setUpdated(false);
                 }
             }

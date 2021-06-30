@@ -12,6 +12,7 @@ package com.sj.pte.modules.question.controller;
  */
 
 import com.alibaba.fastjson.JSONObject;
+import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.question.bean.MNASQ;
 import com.sj.pte.modules.question.bean.MNQuestion;
 import com.sj.pte.modules.question.bean.MNQuestionRequest;
@@ -157,10 +158,11 @@ public class MNQuestionController {
     }
 
     @PatchMapping(value = "/{type}/{id}")
-    public void updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
-                                @PathVariable String type,
-                                @PathVariable String id){
-        questionService.updateById(checkService.checkType(type).getClass(), id, mnQuestionRequest);
+    public UpdateResult updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
+                                        @PathVariable String type,
+                                        @PathVariable String id){
+        String questionId = type + "-" + id;
+        return questionService.updateById(checkService.checkType(type).getClass(), questionId, mnQuestionRequest);
     }
 
     /***********

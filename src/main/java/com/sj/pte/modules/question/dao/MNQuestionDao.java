@@ -13,6 +13,7 @@ package com.sj.pte.modules.question.dao;/**
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import com.sj.pte.modules.question.QuestionLevelEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -87,6 +88,86 @@ public class MNQuestionDao {
         return mongoTemplate.remove(query, tCLass);
     }
 
+    /**
+     * UPDATE ATTRIBUTES
+     */
+    public <T> UpdateResult updateTitleById(Class<T> tCLass, String questionId, String title){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("title", title);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateContentById(Class<T> tCLass, String questionId, String content){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("content", content);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateVerifiedById(Class<T> tCLass, String questionId, boolean verified){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("verified", verified);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updatePredictedById(Class<T> tCLass, String questionId, boolean predicted){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("predicted", predicted);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateNewById(Class<T> tCLass, String questionId, boolean add){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("add", add);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateUpdatedById(Class<T> tCLass, String questionId, boolean updated){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("updated", updated);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateFrequencyById(Class<T> tCLass, String id, int frequency){
+        Query query = new Query(Criteria.where("questionId").is(id));
+        Update update = new Update().set("frequency", frequency);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateLevelById(Class<T> tCLass, String id, QuestionLevelEnum level){
+        Query query = new Query(Criteria.where("questionId").is(id));
+        Update update = new Update().set("level", level);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateTestDateById(Class<T> tCLass, String id, Date testedDates){
+        Query query = new Query(Criteria.where("questionId").is(id));
+        Update update = new Update().addToSet("testedDates", testedDates);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateSourceById(Class<T> tCLass, String questionId, String source){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("source", source);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
+    public <T> UpdateResult updateLessonById(Class<T> tCLass, String questionId, String filePath){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("lessonPath", filePath);
+
+        return mongoTemplate.updateFirst(query, update, tCLass);
+    }
+
     public <T> UpdateResult updateImageById(Class<T> tCLass, String questionId, String imagePath){
         Query query = new Query(Criteria.where("questionId").is(questionId));
         Update update = new Update().set("imagePath", imagePath);
@@ -101,25 +182,24 @@ public class MNQuestionDao {
         return mongoTemplate.updateFirst(query, update, tCLass);
     }
 
-    public <T> UpdateResult updateLessonById(Class<T> tCLass, String questionId, String filePath){
+    public <T> UpdateResult updateOptionsById(Class<T> tCLass, String questionId, List<String> options){
         Query query = new Query(Criteria.where("questionId").is(questionId));
-        Update update = new Update().set("lessonPath", filePath);
+        Update update = new Update().set("options", options);
 
         return mongoTemplate.updateFirst(query, update, tCLass);
     }
 
-    public <T> UpdateResult updateFrequencyById(Class<T> tCLass, String id, int frequency){
-        Query query = new Query(Criteria.where("questionId").is(id));
-        Update update = new Update().set("frequency", frequency);
+    public <T> UpdateResult updateQuestionById(Class<T> tCLass, String questionId, String question){
+        Query query = new Query(Criteria.where("questionId").is(questionId));
+        Update update = new Update().set("question", question);
 
         return mongoTemplate.updateFirst(query, update, tCLass);
     }
 
-    public <T> UpdateResult updateIsUpdatedById(Class<T> tCLass,  String id, boolean isUpdated){
+    public <T> UpdateResult updateModifiedDateById(Class<T> tCLass,  String id){
         Query query = new Query(Criteria.where("questionId").is(id));
-        Update update = new Update().set("update", isUpdated);
-        // [Shark] what does this sentence mean
-        update.set("updateTime", new Date());
+        Update update = new Update().set("update", true);
+        update.set("modifiedDate", new Date());
 
         return mongoTemplate.updateFirst(query, update, tCLass);
     }
