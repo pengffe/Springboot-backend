@@ -198,7 +198,7 @@ public class MNQuestionDao {
 
     public <T> UpdateResult updateModifiedDateById(Class<T> tCLass,  String id){
         Query query = new Query(Criteria.where("questionId").is(id));
-        Update update = new Update().set("update", true);
+        Update update = new Update().set("updated", true);
         update.set("modifiedDate", new Date());
 
         return mongoTemplate.updateFirst(query, update, tCLass);
