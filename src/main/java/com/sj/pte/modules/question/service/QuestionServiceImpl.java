@@ -11,14 +11,23 @@ package com.sj.pte.modules.question.service;/**
  */
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import com.sj.pte.modules.authServer.dao.UserDao;
+import com.sj.pte.modules.practice.bean.MNPractice;
+import com.sj.pte.modules.practice.dao.PracticeDao;
 import com.sj.pte.modules.question.bean.*;
 import com.sj.pte.modules.question.dao.MNQuestionDao;
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,6 +45,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     private CheckServiceImpl checkService;
 
+    private PracticeDao practiceDao;
+
     @Autowired
     public void setMnQuestionDao(MNQuestionDao mnQuestionDao) {
         this.mnQuestionDao = mnQuestionDao;
@@ -44,6 +55,18 @@ public class QuestionServiceImpl implements QuestionService {
     @Autowired
     public void setCheckService(CheckServiceImpl checkService) {
         this.checkService = checkService;
+    }
+
+    @Autowired
+    public void setPracticeDao(PracticeDao practiceDao) {
+        this.practiceDao = practiceDao;
+    }
+
+    private final ObjectMapper objectMapper;
+
+    @Autowired
+    public QuestionServiceImpl(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     /***********
@@ -216,11 +239,49 @@ public class QuestionServiceImpl implements QuestionService {
         return mnQuestionDao.findAllByPage(tClass, pageNum - 1, pageSize, sortType);
     }
 
+
+//    public <T> Page<T> findAllByCategory(String userId, String type, boolean isPracticed, boolean isCollected,
+//                                         Class<T> tClass, int pageNum, int pageSize, String sortType){
+//
+//
+//        if (isPracticed) {
+//            List<MNPractice> prcaticeList = practiceDao.findByUserIdForType(userId, type);
+//            List<T> mnQuestionList = new ArrayList<>();
+//            for (MNPractice practice: prcaticeList
+//                 ) {
+//                mnQuestionList.add(mnQuestionDao.findById(tClass, practice.getQuestionId()));
+//            }
+//
+//            long count = mnQuestionList.size();
+//
+//            Sort sort;
+//            if (sortType.equals("ASC")){
+//                sort = Sort.by(Sort.Direction.ASC, "id");
+//            }
+//            else {
+//                sort = Sort.by(Sort.Direction.DESC, "frequency");
+//            }
+//
+//            if (0 == pageSize){
+//                pageSize = (int)count;
+//            }
+//            Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+//            Page<T> questionPage = new PageImpl(mnQuestionList, pageable, count);
+//            return questionPage;
+//        } else {
+//        }
+//
+//    }
+
     @Override
     public <T> Long findCount(Class<T> tClass){
         return mnQuestionDao.findCount(tClass);
     }
 
+    @Override
+    public UpdateResult update(MNQuestion mnQuestion){
+        return mnQuestionDao.update(mnQuestion);
+    }
 
     @Override
     public <T> UpdateResult updateById(Class<T> tClass, String id, MNQuestionRequest mnQuestionRequest){
@@ -278,6 +339,8 @@ public class QuestionServiceImpl implements QuestionService {
         }
         return updateResult;
     }
+
+
 
     /***********
      * Delete

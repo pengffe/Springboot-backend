@@ -43,6 +43,8 @@ public interface QuestionService {
     /***********
      * Update
      ***********/
+    UpdateResult update(MNQuestion mnQuestion);
+
     <T> UpdateResult updateById(Class<T> tClass, String id, MNQuestionRequest mnQuestionRequest);
 
     <T> DeleteResult deleteById(Class<T> tCLass, String id);

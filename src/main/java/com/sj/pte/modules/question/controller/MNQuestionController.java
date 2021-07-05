@@ -12,8 +12,12 @@ package com.sj.pte.modules.question.controller;
  */
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.question.bean.MNASQ;
 import com.sj.pte.modules.question.bean.MNQuestion;
 import com.sj.pte.modules.question.bean.MNQuestionRequest;
 import com.sj.pte.modules.question.service.CheckService;
@@ -22,9 +26,6 @@ import com.sj.pte.utils.json.JSONUtil;
 import com.sj.pte.utils.upload.UploadFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/question")
 public class MNQuestionController {
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private QuestionServiceImpl questionService;
 
@@ -133,6 +136,19 @@ public class MNQuestionController {
 //        return questionService.findAll(checkService.checkType(type).getClass());
 //    }
 
+    @GetMapping(value = "/{userId}/{type}/{isPracticed}/{isCollected}")
+    public Page findAllByCategory(@PathVariable String userId,
+                                  @PathVariable String type,
+                                  @PathVariable String isPracticed,
+                                  @PathVariable String isCollected,
+                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                  @RequestParam(value = "pageSize", defaultValue = "0")  int pageSize,
+                                  @RequestParam(value = "sortType", defaultValue = "ASC")  String sortType){
+        return null;
+
+
+    }
+
     @GetMapping(value = "/{type}")
     public Page findAllByPage(@PathVariable String type,
                               @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
@@ -157,12 +173,36 @@ public class MNQuestionController {
         return uploadFileService.saveFileToDisk(questionId, file, null);
     }
 
-    @PatchMapping(value = "/{type}/{id}")
-    public UpdateResult updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
-                                        @PathVariable String type,
-                                        @PathVariable String id){
+//    @PatchMapping(value = "/{type}/{id}")
+//    public UpdateResult updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
+//                                        @PathVariable String type,
+//                                        @PathVariable String id){
+//        String questionId = type + "-" + id;
+//        return questionService.updateById(checkService.checkType(type).getClass(), questionId, mnQuestionRequest);
+//    }
+
+    @PatchMapping(path = "/{type}/{id}", consumes = "application/json-patch+json")
+    public ResponseEntity update(@PathVariable String type,
+                                              @PathVariable String id,
+                                              @RequestBody JsonPatch patch){
         String questionId = type + "-" + id;
-        return questionService.updateById(checkService.checkType(type).getClass(), questionId, mnQuestionRequest);
+        try {
+            MNQuestion mnQuestion = questionService.findById(checkService.checkType(questionId).getClass(), questionId);
+            if (null == mnQuestion){
+                return new ResponseEntity<>("QUESTION NOT FOUND", HttpStatus.NOT_FOUND);
+            }
+
+            MNQuestion questionPatched = applyPatchToQuestion(patch, mnQuestion);
+            UpdateResult update = questionService.update(questionPatched);
+            return new ResponseEntity<>(update, HttpStatus.OK);
+        } catch (JsonPatchException | JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    private MNQuestion applyPatchToQuestion(JsonPatch patch, MNQuestion targetQuestion) throws JsonPatchException, JsonProcessingException {
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetQuestion, JsonNode.class));
+        return objectMapper.treeToValue(patched, targetQuestion.getClass());
     }
 
     /***********
