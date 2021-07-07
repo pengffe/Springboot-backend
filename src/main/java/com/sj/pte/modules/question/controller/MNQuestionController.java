@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.mongodb.client.result.UpdateResult;
+import com.sj.pte.modules.practice.bean.FilterStatusEnum;
 import com.sj.pte.modules.question.bean.MNQuestion;
 import com.sj.pte.modules.question.bean.MNQuestionRequest;
 import com.sj.pte.modules.question.service.CheckService;
@@ -136,17 +137,19 @@ public class MNQuestionController {
 //        return questionService.findAll(checkService.checkType(type).getClass());
 //    }
 
-    @GetMapping(value = "/{userId}/{type}/{isPracticed}/{isCollected}")
-    public Page findAllByCategory(@PathVariable String userId,
-                                  @PathVariable String type,
-                                  @PathVariable String isPracticed,
-                                  @PathVariable String isCollected,
-                                  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                  @RequestParam(value = "pageSize", defaultValue = "0")  int pageSize,
-                                  @RequestParam(value = "sortType", defaultValue = "ASC")  String sortType){
-        return null;
-
-
+    @GetMapping(value = "/{userId}/{type}/{source}/{frequency}/{practiceStatus}/{collectStatus}")
+    public Page findAllByFilter(@PathVariable String userId,
+                                @PathVariable String type,
+                                @PathVariable FilterStatusEnum source,
+                                @PathVariable FilterStatusEnum frequency,
+                                @PathVariable FilterStatusEnum practiceStatus,
+                                @PathVariable FilterStatusEnum collectStatus,
+                                @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                @RequestParam(value = "pageSize", defaultValue = "0")  int pageSize,
+                                @RequestParam(value = "sortType", defaultValue = "ASC")  String sortType){
+        return questionService.findAllByFilter(checkService.checkType(type).getClass(), userId, type,
+                source, frequency, practiceStatus, collectStatus,
+                pageNum, pageSize, sortType);
     }
 
     @GetMapping(value = "/{type}")

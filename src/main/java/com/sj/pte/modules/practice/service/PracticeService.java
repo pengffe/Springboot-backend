@@ -15,6 +15,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.practice.bean.MNPractice;
+import com.sj.pte.modules.practice.bean.MNUserCollectRecord;
+import com.sj.pte.modules.practice.bean.MNUserPracticeRecord;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -25,6 +28,32 @@ public interface PracticeService {
 //     * 将音频练习文件存入服务器，并将文件路径存入数据库
 //     */
 //    ResponseEntity<JSONObject> savePracticeToDisk(String userId, String questionId, MultipartFile file);
+
+    /**
+     * 将收藏过的ID加入收藏记录表中，表示此题已收藏
+     */
+    UpdateResult saveCollectQuestionId(String userId, String questionId);
+
+    /**
+     * 创建用户收藏记录表，记录哪些题被收藏
+     */
+    MNUserCollectRecord saveCollectRecord(String userId);
+
+    /**
+     * 取消收藏
+     */
+    UpdateResult removeCollectQuestionId(String userId, String questionId);
+
+
+    /**
+     * 将练习过的ID加入练习记录表中，表示此题已练习
+     */
+    UpdateResult savePracticeQuestionId(String userId, String questionId);
+
+    /**
+     * 创建用户练习记录表，记录那些题已被练习过
+     */
+    MNUserPracticeRecord savePracticeRecord(String userId);
 
     /**
      * 将文本练习内容直接存入数据库

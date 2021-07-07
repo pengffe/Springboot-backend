@@ -11,25 +11,21 @@ package com.sj.pte.modules.question.service;/**
  */
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.authServer.dao.UserDao;
+import com.sj.pte.modules.practice.bean.FilterStatusEnum;
 import com.sj.pte.modules.practice.bean.MNPractice;
 import com.sj.pte.modules.practice.dao.PracticeDao;
+import com.sj.pte.modules.practice.dao.UserCollectRecordDao;
+import com.sj.pte.modules.practice.dao.UserPracticeRecordDao;
 import com.sj.pte.modules.question.bean.*;
 import com.sj.pte.modules.question.dao.MNQuestionDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
-import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +43,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     private PracticeDao practiceDao;
 
+    private UserPracticeRecordDao userPracticeRecordDao;
+
+    private UserCollectRecordDao userCollectRecordDao;
+
     @Autowired
     public void setMnQuestionDao(MNQuestionDao mnQuestionDao) {
         this.mnQuestionDao = mnQuestionDao;
@@ -62,11 +62,13 @@ public class QuestionServiceImpl implements QuestionService {
         this.practiceDao = practiceDao;
     }
 
-    private final ObjectMapper objectMapper;
-
     @Autowired
-    public QuestionServiceImpl(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public void setUserPracticeRecordDao(UserPracticeRecordDao userPracticeRecordDao) {
+        this.userPracticeRecordDao = userPracticeRecordDao;
+    }
+    @Autowired
+    public void setUserCollectRecordDao(UserCollectRecordDao userCollectRecordDao) {
+        this.userCollectRecordDao = userCollectRecordDao;
     }
 
     /***********
@@ -239,39 +241,200 @@ public class QuestionServiceImpl implements QuestionService {
         return mnQuestionDao.findAllByPage(tClass, pageNum - 1, pageSize, sortType);
     }
 
+    public <T extends MNQuestion> Page<T> findAllByFilter(Class<T> tClass,
+                                                          String userId, String type,
+                                                          FilterStatusEnum source,
+                                                          FilterStatusEnum frequency,
+                                                          FilterStatusEnum practiceStatus,
+                                                          FilterStatusEnum collectStatus,
+                                                          int pageNum, int pageSize, String sortType)
+    {
+        List<T> mnQuestionList = findAllByStatus(tClass, userId, type, practiceStatus, collectStatus);
+        List<T> qList = new ArrayList<>(mnQuestionList);
+        int frequencyThreshold = 3;
 
-//    public <T> Page<T> findAllByCategory(String userId, String type, boolean isPracticed, boolean isCollected,
-//                                         Class<T> tClass, int pageNum, int pageSize, String sortType){
-//
-//
-//        if (isPracticed) {
-//            List<MNPractice> prcaticeList = practiceDao.findByUserIdForType(userId, type);
-//            List<T> mnQuestionList = new ArrayList<>();
-//            for (MNPractice practice: prcaticeList
-//                 ) {
-//                mnQuestionList.add(mnQuestionDao.findById(tClass, practice.getQuestionId()));
-//            }
-//
-//            long count = mnQuestionList.size();
-//
-//            Sort sort;
-//            if (sortType.equals("ASC")){
-//                sort = Sort.by(Sort.Direction.ASC, "id");
-//            }
-//            else {
-//                sort = Sort.by(Sort.Direction.DESC, "frequency");
-//            }
-//
-//            if (0 == pageSize){
-//                pageSize = (int)count;
-//            }
-//            Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-//            Page<T> questionPage = new PageImpl(mnQuestionList, pageable, count);
-//            return questionPage;
-//        } else {
-//        }
-//
-//    }
+        if (source.name().equals("MEMORY") && frequency.name().equals("ALL")){
+            for (T item: qList
+                 ) {
+                if (!item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if (source.name().equals("MEMORY") && frequency.name().equals("HIGH")) {
+            for (T item: qList
+            ) {
+                if (!item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() < frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if (source.name().equals("MEMORY") && frequency.name().equals("LOW")) {
+            for (T item: qList
+            ) {
+                if (!item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() >= frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("VERIFIED") && frequency.name().equals("ALL")) {
+            for (T item: qList
+            ) {
+                if (!item.isVerified()){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("VERIFIED") && frequency.name().equals("HIGH")) {
+            for (T item: qList
+            ) {
+                if (!item.isVerified()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() < frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("VERIFIED") && frequency.name().equals("LOW")) {
+            for (T item: qList
+            ) {
+                if (!item.isVerified()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() >= frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("OTHERS") && frequency.name().equals("ALL")) {
+            for (T item: qList
+            ) {
+                if (item.isVerified() || item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("OTHERS") && frequency.name().equals("HIGH")) {
+            for (T item: qList
+            ) {
+                if (item.isVerified() || item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() < frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+        else if(source.name().equals("OTHERS") && frequency.name().equals("LOW")) {
+            for (T item: qList
+            ) {
+                if (item.isVerified() || item.isMemory()){
+                    mnQuestionList.remove(item);
+                }
+                else if (item.getFrequency() >= frequencyThreshold){
+                    mnQuestionList.remove(item);
+                }
+            }
+        }
+
+        long count = mnQuestionList.size();
+        System.out.println(count);
+        if (0 == count){
+            return null;
+        }
+        // sort the search result
+        Sort sort;
+        if (sortType.equals("ASC")){
+            sort = Sort.by(Sort.Direction.ASC, "id");
+        }
+        else {
+            sort = Sort.by(Sort.Direction.DESC, "frequency");
+        }
+        if (0 == pageSize){
+            pageSize = (int)count;
+        }
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        Page<T> questionPage = new PageImpl(mnQuestionList, pageable, count);
+        return questionPage;
+    }
+
+    private <T extends MNQuestion> List<T> findAllByStatus(Class<T> tClass,
+                                       String userId, String type,
+                                       FilterStatusEnum practiceStatus,
+                                       FilterStatusEnum collectStatus){
+        List<T> mnQuestionList = new ArrayList<>();
+
+        // 全部， 全部
+        List<String> allRecord = new ArrayList<>();
+        List<T> allQuestion = mnQuestionDao.findAll(tClass);
+        for (MNQuestion question: allQuestion
+             ) {
+            allRecord.add(question.getQuestionId());
+        }
+        // 练习，全部
+        List<String> practiceRecord = userPracticeRecordDao.findAllByTypeForUser(userId, type);
+        // 全部，收藏
+        List<String> collectRecord = userCollectRecordDao.findAllByTypeForUser(userId, type);
+
+        List<String> resultList = allRecord;
+        if (practiceStatus.name().equals("PRACTICED") && collectStatus.name().equals("COLLECTED")){
+            // 练习，收藏
+            practiceRecord.retainAll(collectRecord);
+            resultList = practiceRecord;
+        }
+        else if (practiceStatus.name().equals("PRACTICED") && collectStatus.name().equals("ALL")) {
+            resultList = practiceRecord;
+        }
+        else if (practiceStatus.name().equals("PRACTICED") && collectStatus.name().equals("UNCOLLECTED")) {
+            // 练习，未收藏
+            allRecord.removeAll(collectRecord);
+            allRecord.retainAll(practiceRecord);
+            resultList = allRecord;
+        }
+        else if(practiceStatus.name().equals("ALL") && collectStatus.name().equals("COLLECTED")) {
+            //全部，收藏
+            resultList = collectRecord;
+        }
+        else if(practiceStatus.name().equals("ALL") && collectStatus.name().equals("UNCOLLECTED")) {
+            //全部，未收藏
+            allRecord.removeAll(collectRecord);
+            resultList = allRecord;
+        }
+        else if(practiceStatus.name().equals("ALL") && collectStatus.name().equals("ALL")) {
+            //全部，全部
+            return mnQuestionDao.findAll(tClass);
+        }
+        else if(practiceStatus.name().equals("UNPRACTICED") && collectStatus.name().equals("COLLECTED")) {
+            // 未练习，收藏
+            allRecord.removeAll(practiceRecord);
+            allRecord.retainAll(collectRecord);
+            resultList = allRecord;
+        }
+        else if(practiceStatus.name().equals("UNPRACTICED") && collectStatus.name().equals("UNCOLLECTED")) {
+            // 未练习，收藏
+            allRecord.removeAll(practiceRecord);
+            allRecord.removeAll(collectRecord);
+            resultList = allRecord;
+        }
+        else if(practiceStatus.name().equals("UNPRACTICED") && collectStatus.name().equals("ALL")) {
+            // 未练习，全部
+            allRecord.removeAll(practiceRecord);
+            resultList = allRecord;
+        }
+
+        for (String questionId: resultList
+        ) {
+            mnQuestionList.add(mnQuestionDao.findById(tClass, questionId));
+        }
+        return mnQuestionList;
+    }
 
     @Override
     public <T> Long findCount(Class<T> tClass){

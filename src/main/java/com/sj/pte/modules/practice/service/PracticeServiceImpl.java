@@ -15,7 +15,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.practice.bean.MNPractice;
+import com.sj.pte.modules.practice.bean.MNUserCollectRecord;
+import com.sj.pte.modules.practice.bean.MNUserPracticeRecord;
 import com.sj.pte.modules.practice.dao.PracticeDao;
+import com.sj.pte.modules.practice.dao.UserCollectRecordDao;
+import com.sj.pte.modules.practice.dao.UserPracticeRecordDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +37,41 @@ public class PracticeServiceImpl implements PracticeService {
 
     @Autowired
     PracticeDao practiceDao;
+
+    @Autowired
+    UserPracticeRecordDao userPracticeRecordDao;
+
+    @Autowired
+    UserCollectRecordDao userCollectRecordDao;
+
+    @Override
+    public UpdateResult saveCollectQuestionId(String userId, String questionId) {
+        return userCollectRecordDao.updateById(userId,questionId);
+    }
+
+    @Override
+    public MNUserCollectRecord saveCollectRecord(String userId) {
+        MNUserCollectRecord mnUserCollectRecord = new MNUserCollectRecord();
+        mnUserCollectRecord.setUserId(userId);
+        return userCollectRecordDao.save(mnUserCollectRecord);
+    }
+
+    @Override
+    public UpdateResult removeCollectQuestionId(String userId, String questionId) {
+        return userCollectRecordDao.deleteById(userId, questionId);
+    }
+
+    @Override
+    public UpdateResult savePracticeQuestionId(String userId, String questionId) {
+        return userPracticeRecordDao.updateById(userId, questionId);
+    }
+
+    @Override
+    public MNUserPracticeRecord savePracticeRecord(String userId) {
+        MNUserPracticeRecord mnUserPracticeRecord = new MNUserPracticeRecord();
+        mnUserPracticeRecord.setUserId(userId);
+        return userPracticeRecordDao.save(mnUserPracticeRecord);
+    }
 
     @Override
     public ResponseEntity<JSONObject> savePracticeToDB(MNPractice practiceRecord) {

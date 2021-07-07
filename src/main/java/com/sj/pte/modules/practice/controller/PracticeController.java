@@ -44,13 +44,21 @@ public class PracticeController {
     @Autowired
     UploadFileService uploadFileService;
 
+    @PostMapping("/{userId}")
+    public void testPractice(@PathVariable String userId){
+        practiceServiceImpl.savePracticeRecord(userId);
+        practiceServiceImpl.saveCollectRecord(userId);
+    }
+
     @PostMapping(value = "/{userId}/{questionId}")
     public ResponseEntity<JSONObject> saveAudioPractice(@PathVariable String userId, @PathVariable String questionId, @RequestParam(value = "file") MultipartFile file) {
+        practiceServiceImpl.savePracticeQuestionId(userId, questionId);
         return uploadFileService.saveFileToDisk(questionId, file, userId);
     }
 
     @PostMapping(value = "")
     public ResponseEntity<JSONObject> saveTextPractice(@RequestBody MNPractice practiceRecord) {
+        practiceServiceImpl.savePracticeQuestionId(practiceRecord.getUserId(), practiceRecord.getQuestionId());
         return practiceServiceImpl.savePracticeToDB(practiceRecord);
     }
 

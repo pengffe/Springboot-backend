@@ -11,28 +11,25 @@ package com.sj.pte.modules.question.dao;/**
  */
 
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.question.QuestionLevelEnum;
 import com.sj.pte.modules.question.bean.MNQuestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.data.mongodb.core.ExecutableUpdateOperation;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static com.sj.pte.utils.json.ClassFieldUtil.getFieldValueByName;
 
 /**
  * @description
@@ -119,24 +116,6 @@ public class MNQuestionDao {
             update.set(key, value);
         }
         return mongoTemplate.upsert(query, update, mnQuestion.getClass());
-    }
-
-    private static Object getFieldValueByName(String fieldName, Object o) {
-        String firstLetter = fieldName.substring(0, 1).toUpperCase();
-        String getter = "get" + firstLetter + fieldName.substring(1);
-        try {
-            Method method = o.getClass().getMethod(getter);
-            return method.invoke(o);
-        } catch (Exception e) {
-            getter = "is" + firstLetter + fieldName.substring(1);
-            try {
-                Method method = o.getClass().getMethod(getter);
-                return method.invoke(o);
-            } catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }
-        return null;
     }
 
     public <T> UpdateResult updateTitleById(Class<T> tCLass, String questionId, String title){

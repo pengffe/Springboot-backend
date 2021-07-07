@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,13 +65,28 @@ public class PracticeDao {
         return mongoTemplate.find(query, MNPractice.class);
     }
 
+    public List findByUserIdForType(String userId, String type){
+        Query query = new Query(Criteria.where("userId").is(userId));
+        List<MNPractice> mnPractices = mongoTemplate.find(query, MNPractice.class);
+        List<MNPractice> mnPracticeListForOneType = new ArrayList<>();
+
+        for (MNPractice practice: mnPractices
+             ) {
+            if (practice.getQuestionId().contains(type)){
+                mnPracticeListForOneType.add(practice);
+            }
+
+        }
+        return mnPracticeListForOneType;
+    }
+
     public DeleteResult deleteById(long id) {
         Query query = new Query(Criteria.where("id").is(id));
         return mongoTemplate.remove(query, MNPractice.class);
     }
 
-    public <T> T findById(Class<T> tCLass, String id) {
-        Query query = new Query(Criteria.where("id").is(id));
+    public <T> T findById(Class<T> tCLass, String userId) {
+        Query query = new Query(Criteria.where("userId").is(userId));
         return mongoTemplate.findOne(query, tCLass);
     }
 }
