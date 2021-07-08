@@ -74,6 +74,11 @@ public class PracticeServiceImpl implements PracticeService {
     }
 
     @Override
+    public UpdateResult resetPracticeRecord(String userId) {
+        return userPracticeRecordDao.resetByUserId(userId);
+    }
+
+    @Override
     public ResponseEntity<JSONObject> savePracticeToDB(MNPractice practiceRecord) {
         JSONObject json = new JSONObject();
         if (null != practiceDao.save(practiceRecord)){

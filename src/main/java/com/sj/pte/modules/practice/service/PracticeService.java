@@ -56,6 +56,11 @@ public interface PracticeService {
     MNUserPracticeRecord savePracticeRecord(String userId);
 
     /**
+     * 重置练习记录表，清空所有记录数据
+     */
+    UpdateResult resetPracticeRecord(String userId);
+
+    /**
      * 将文本练习内容直接存入数据库
      */
     ResponseEntity<JSONObject>  savePracticeToDB(MNPractice practiceRecord);

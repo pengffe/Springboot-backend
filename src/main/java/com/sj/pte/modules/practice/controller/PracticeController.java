@@ -51,7 +51,9 @@ public class PracticeController {
     }
 
     @PostMapping(value = "/{userId}/{questionId}")
-    public ResponseEntity<JSONObject> saveAudioPractice(@PathVariable String userId, @PathVariable String questionId, @RequestParam(value = "file") MultipartFile file) {
+    public ResponseEntity<JSONObject> saveAudioPractice(@PathVariable String userId,
+                                                        @PathVariable String questionId,
+                                                        @RequestParam(value = "file") MultipartFile file) {
         practiceServiceImpl.savePracticeQuestionId(userId, questionId);
         return uploadFileService.saveFileToDisk(questionId, file, userId);
     }
@@ -65,6 +67,11 @@ public class PracticeController {
     @DeleteMapping("/{id}")
     public DeleteResult deletePracticeById(@PathVariable Long id){
         return practiceServiceImpl.deletePracticeById(id);
+    }
+
+    @PutMapping("/{userId}")
+    public UpdateResult resetPracticeRecordByUserId(@PathVariable String userId){
+        return practiceServiceImpl.resetPracticeRecord(userId);
     }
 
     @PutMapping("/{id}/{answer}")

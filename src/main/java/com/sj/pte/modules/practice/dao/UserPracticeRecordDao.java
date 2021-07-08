@@ -19,6 +19,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.sj.pte.utils.json.ClassFieldUtil.getFieldValueByName;
@@ -62,15 +64,25 @@ public class UserPracticeRecordDao {
         else if (!questionIdList.contains(questionId)){
            update = update.addToSet(key, questionId);
         }
+        else {
+            return null;
+        }
         return mongoTemplate.updateFirst(query, update, MNUserPracticeRecord.class);
     }
 
-    public UpdateResult deleteById(String userId, String questionId){
+    public UpdateResult resetByUserId(String userId){
         Query query = new Query(Criteria.where("userId").is(userId));
-        String key = questionId.split("-")[0];
-        Update update = new Update().pull(key, questionId);
+        Update update = new Update();
+
+        Class<?> clazz = MNUserPracticeRecord.class;
+        Field[] declaredFields = clazz.getDeclaredFields();
+        for (Field item: declaredFields
+             ) {
+            String key = item.getName();
+            if (key.equals("userId")) continue;
+            update.set(key, new ArrayList<>());
+        }
 
         return mongoTemplate.updateFirst(query, update, MNUserPracticeRecord.class);
     }
-
 }

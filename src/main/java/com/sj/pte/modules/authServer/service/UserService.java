@@ -18,6 +18,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.authServer.dao.UserDao;
 import com.sj.pte.modules.authServer.entity.JwtUser;
+import com.sj.pte.modules.practice.service.PracticeServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService implements UserDetailsService {
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private PracticeServiceImpl practiceService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
@@ -91,7 +92,8 @@ public class UserService implements UserDetailsService {
             user.setPhone(contact);
         }
         if (userDao.save(user)){
-
+            practiceService.saveCollectRecord(user.getId());
+            practiceService.savePracticeRecord(user.getId());
 
             return new ResponseEntity<>("Success to register.", HttpStatus.OK);
         }
