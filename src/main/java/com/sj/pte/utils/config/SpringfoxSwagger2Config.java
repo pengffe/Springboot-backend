@@ -86,10 +86,11 @@ public class SpringfoxSwagger2Config {
                 regex("/comment.*"),
                 regex("/question.*"),
                 regex("/practice.*"),
+                regex("/collect.*"),
                 regex("/register.*"),
-                regex("/apply.*")
-
-        );
+                regex("/apply.*"),
+                regex("/product.*")
+                );
     }
 }
 
