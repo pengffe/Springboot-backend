@@ -12,9 +12,11 @@ package com.sj.pte.modules.store.service;
 
 import com.sj.pte.modules.store.bean.MNProduct;
 import com.sj.pte.modules.store.dao.MNProductDao;
+import com.sj.pte.modules.store.response.model.ProductPreviewResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +28,30 @@ public class MNProductServiceImpl implements MNProductService {
 
     @Autowired
     MNProductDao mnProductDao;
+
+    @Override
+    public ProductPreviewResponse getProductPreviewById(String productId) {
+        MNProduct mnProduct = mnProductDao.findById(MNProduct.class, productId);
+        if (null != mnProduct){
+            return new ProductPreviewResponse(mnProduct);
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<ProductPreviewResponse> getAllProductPreview() {
+        List<ProductPreviewResponse> previews = new ArrayList<>();
+        List<MNProduct> mnProducts = mnProductDao.findAll(MNProduct.class);
+        if (mnProducts.size() > 0){
+            for (MNProduct item: mnProducts
+                 ) {
+                previews.add(new ProductPreviewResponse(item));
+            }
+        }
+       return previews;
+    }
 
     @Override
     public MNProduct getProductById(String productId) {

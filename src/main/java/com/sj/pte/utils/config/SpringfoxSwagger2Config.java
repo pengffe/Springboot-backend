@@ -89,7 +89,8 @@ public class SpringfoxSwagger2Config {
                 regex("/collect.*"),
                 regex("/register.*"),
                 regex("/apply.*"),
-                regex("/product.*")
+                regex("/product.*"),
+                regex("/order.*")
                 );
     }
 }

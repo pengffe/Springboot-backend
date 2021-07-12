@@ -26,8 +26,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("MNOrder")
-public class MNOrder extends MNPost {
+@Document("MNTrolley")
+public class MNTrolley extends MNPost {
     private String userId;
     private List<String> productId = new ArrayList<>();
 }

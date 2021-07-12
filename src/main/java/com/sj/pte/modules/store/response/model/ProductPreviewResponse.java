@@ -1,5 +1,5 @@
-package com.sj.pte.modules.store.bean;/**
- * Created by TUTEHUB on 2021-07-08 14:57.
+package com.sj.pte.modules.store.response.model;/**
+ * Created by TUTEHUB on 2021-07-12 15:00.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -9,27 +9,32 @@ package com.sj.pte.modules.store.bean;/**
  * Technique Support: jobyme88.com
  */
 
-import com.sj.pte.general.MNPost;
+import com.sj.pte.modules.store.bean.MNProduct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @descrption
+ * @descrption to display the preview of the products, only first video can play, others only display the video name
  */
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("MNProduct")
-public class MNProduct extends MNPost {
+public class ProductPreviewResponse {
     private String productId;
     private String productName;
     private String price;
-    private List<String> productChapterName = new ArrayList<>();
-    private List<String> productPath = new ArrayList<>();
+    private List<String> preview = new ArrayList<>();
+
+    public ProductPreviewResponse(MNProduct mnProduct){
+        this.productId = mnProduct.getProductId();
+        this.productName = mnProduct.getProductName();
+        this.price = mnProduct.getPrice();
+        this.preview.add(mnProduct.getProductPath().get(0));
+        this.preview.addAll(mnProduct.getProductChapterName());
+    }
 }

@@ -254,7 +254,7 @@ public class UploadFileService {
     /**
      * 将视频课程存入数据库以及磁盘中
      */
-    public ResponseEntity<JSONObject> saveVideoLesson(MNProduct mnProduct, MultipartFile file){
+    public ResponseEntity<JSONObject> saveVideoLesson(MNProduct mnProduct, MultipartFile file, String chapterName){
         ResponseEntity<JSONObject> checkResult = checkFile(file);
         //获取后缀
         String substring;
@@ -268,12 +268,12 @@ public class UploadFileService {
         JSONObject json = new JSONObject();
         String teacherName = mnProduct.getAuthor();
         //保存的文件名
-        String dFileName = teacherName + "-" + UUID.randomUUID() + substring;
+        String dFileName = teacherName + "-" + chapterName + "-" + UUID.randomUUID() + substring;
 
         //服务器磁盘存储路径
-        String path = productPath + "/";
+        String path = productPath;
         //服务器url访问路径
-        String URLPath = productURLPath  + "/" + dFileName;
+        String URLPath = productURLPath  + dFileName;
 
 
         //生成保存文件
@@ -289,16 +289,18 @@ public class UploadFileService {
         //将上传文件保存到路径
         try {
             file.transferTo(uploadFile);
-            Object result;
-            if (null == mnProduct.getProductId()){
+            MNProduct result;
+            String productId = mnProduct.getProductId();
+            if (null == productId){
                 mnProduct.setProductId(RandomUtil.randomString(8));
-                List<String> productPath = new ArrayList<>();
-                productPath.add(URLPath);
-                mnProduct.setProductPath(productPath);
+                mnProduct.getProductPath().add(URLPath);
+                mnProduct.getProductChapterName().add(chapterName);
                 result = mnProductDao.save(mnProduct);
             }
             else {
-                result = mnProductDao.updatePathById(mnProduct.getProductId(), URLPath);
+                mnProductDao.updateChapterById(productId,chapterName);
+                mnProductDao.updatePathById(productId, URLPath);
+                result = mnProductDao.findById(MNProduct.class, productId);
             }
             json.put("Result", result.toString());
             json.put("STATUS", "200");

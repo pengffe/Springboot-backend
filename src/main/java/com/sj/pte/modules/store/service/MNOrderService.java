@@ -9,8 +9,7 @@ package com.sj.pte.modules.store.service;/**
  * Technique Support: jobyme88.com
  */
 
-import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.store.bean.MNOrder;
+import com.sj.pte.modules.store.bean.MNTrolley;
 import com.sj.pte.modules.store.bean.MNOrderHistory;
 
 import java.util.List;
@@ -24,12 +23,12 @@ public interface MNOrderService {
     /**
      * 用户添加订单到购物车
      */
-    MNOrder addProductsToTrolley(String userId, List<String>  productIds);
+    MNTrolley addProductsToTrolley(String userId, List<String>  productIds);
 
     /**
      * 显示购物车订单清单
      */
-    List<MNOrder> showProductsInTrolley(String userId);
+    List<String> showProductsInTrolley(String userId);
 
     /**
      *  更新订单信息，是否已购买
@@ -39,5 +38,5 @@ public interface MNOrderService {
     /**
      * 显示历史订单
      */
-    List<MNOrder> showHistoryOrders(String userId);
+    List<MNTrolley> showHistoryOrders(String userId);
 }

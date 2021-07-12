@@ -10,20 +10,20 @@ package com.sj.pte.modules.store.service;/**
  */
 
 import cn.hutool.core.util.RandomUtil;
-import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.store.bean.MNOrder;
+import com.sj.pte.modules.store.bean.MNTrolley;
 import com.sj.pte.modules.store.bean.MNOrderHistory;
 import com.sj.pte.modules.store.dao.MNOrderDao;
 import com.sj.pte.modules.store.dao.MNProductDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * @descrption
  */
 
+@Service
 public class MNOrderServiceImpl implements MNOrderService {
 
     @Autowired
@@ -32,22 +32,26 @@ public class MNOrderServiceImpl implements MNOrderService {
     MNProductDao mnProductDao;
 
     @Override
-    public MNOrder addProductsToTrolley(String userId, List<String> productIds) {
-        if (null == mnOrderDao.findById(MNOrder.class, userId)){
-            MNOrder mnOrder = new MNOrder();
-            mnOrder.setUserId(userId);
-            mnOrder.getProductId().addAll(productIds);
-            return mnOrderDao.save(mnOrder);
+    public MNTrolley addProductsToTrolley(String userId, List<String> productIds) {
+        if (null == mnOrderDao.findById(MNTrolley.class, userId)){
+            MNTrolley mnTrolley = new MNTrolley();
+            mnTrolley.setUserId(userId);
+            mnTrolley.getProductId().addAll(productIds);
+            return mnOrderDao.save(mnTrolley);
         }
         else {
-            mnOrderDao.updateProductIdById(MNOrder.class, userId, productIds, true);
-            return mnOrderDao.findById(MNOrder.class, userId);
+            mnOrderDao.updateProductIdById(MNTrolley.class, userId, productIds, true);
+            return mnOrderDao.findById(MNTrolley.class, userId);
         }
     }
 
     @Override
-    public List<MNOrder> showProductsInTrolley(String userId) {
-        return null;
+    public List<String> showProductsInTrolley(String userId) {
+        MNTrolley mnTrolley = mnOrderDao.findById(MNTrolley.class, userId);
+        if (null != mnTrolley){
+            return mnTrolley.getProductId();
+        }
+        else return null;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class MNOrderServiceImpl implements MNOrderService {
          * 2, create order ID
          * 3, add the ids to history
          */
-        mnOrderDao.updateProductIdById(MNOrder.class, userId, productIds, false);
+        mnOrderDao.updateProductIdById(MNTrolley.class, userId, productIds, false);
         MNOrderHistory mnOrderHistory = new MNOrderHistory();
         mnOrderHistory.setOrderId(RandomUtil.randomString(16));
         mnOrderHistory.setUserId(userId);
@@ -67,7 +71,7 @@ public class MNOrderServiceImpl implements MNOrderService {
     }
 
     @Override
-    public List<MNOrder> showHistoryOrders(String userId) {
+    public List<MNTrolley> showHistoryOrders(String userId) {
         return null;
     }
 }

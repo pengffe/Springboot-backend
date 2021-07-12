@@ -9,9 +9,9 @@ package com.sj.pte.modules.store.controller;/**
  * Technique Support: jobyme88.com
  */
 
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.sj.pte.modules.store.bean.MNProduct;
+import com.sj.pte.modules.store.response.model.ProductPreviewResponse;
 import com.sj.pte.modules.store.service.MNProductServiceImpl;
 import com.sj.pte.utils.upload.UploadFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,33 +35,57 @@ public class MNProductController {
     @Autowired
     MNProductServiceImpl mnProductService;
 
-    @PostMapping("/{productName}/{teacher}")
+    @PostMapping("/{productName}/{productChapterName}/{teacher}")
     public ResponseEntity<JSONObject> addNewProduct(@RequestParam(value = "file") MultipartFile file,
                                                     @PathVariable String productName,
-                                                    @PathVariable String teacher){
+                                                    @PathVariable String teacher,
+                                                    @PathVariable String productChapterName){
         MNProduct product = new MNProduct();
         product.setProductName(productName);
         product.setAuthor(teacher);
-        return uploadFileService.saveVideoLesson(product, file);
+        return uploadFileService.saveVideoLesson(product, file, productChapterName);
     }
 
-    @PostMapping("/{productId}")
+    @PostMapping("/{productId}/{productChapterName}")
     public ResponseEntity<JSONObject> addProduct(@RequestParam(value = "file") MultipartFile file,
-                                                 @PathVariable String productId){
+                                                 @PathVariable String productId,
+                                                 @PathVariable String productChapterName){
         MNProduct product = mnProductService.getProductById(productId);
         if (null == product){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return uploadFileService.saveVideoLesson(product, file);
+        return uploadFileService.saveVideoLesson(product, file, productChapterName);
     }
 
     @GetMapping("/{productId}")
-    public MNProduct getProductById(@PathVariable String productId){
-        return mnProductService.getProductById(productId);
+    public ResponseEntity<ProductPreviewResponse> getProductPreview(@PathVariable String productId){
+        ProductPreviewResponse productPreviewById = mnProductService.getProductPreviewById(productId);
+        if (null != productPreviewById){
+            return new ResponseEntity<>(productPreviewById, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
-    @GetMapping
-    public List<MNProduct> getAllProduct(){
-        return mnProductService.getAllProduct();
+    @GetMapping("")
+    public ResponseEntity<List<ProductPreviewResponse>> getAllProductPreview(){
+        List<ProductPreviewResponse> allProductPreview = mnProductService.getAllProductPreview();
+        if (allProductPreview.size() > 0){
+            return new ResponseEntity<>(allProductPreview, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
+
+//    @GetMapping("/{productId}")
+//    public MNProduct previewProduct(@PathVariable String productId){
+//        return mnProductService.getProductById(productId);
+//    }
+
+//    @GetMapping
+//    public List<MNProduct> getAllProduct(){
+//        return mnProductService.getAllProduct();
+//    }
 }

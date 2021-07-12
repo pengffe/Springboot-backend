@@ -2,6 +2,7 @@ package com.sj.pte.modules.store.service;
 
 import com.sj.pte.modules.store.bean.MNProduct;
 import com.sj.pte.modules.store.dao.MNProductDao;
+import com.sj.pte.modules.store.response.model.ProductPreviewResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.List;
  */
 public interface MNProductService {
 
+    ProductPreviewResponse getProductPreviewById(String productId);
+    List<ProductPreviewResponse> getAllProductPreview();
     MNProduct getProductById(String productId);
     List<MNProduct> getAllProduct();
 }
