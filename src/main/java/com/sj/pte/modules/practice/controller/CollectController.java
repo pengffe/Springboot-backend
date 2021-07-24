@@ -9,14 +9,12 @@ package com.sj.pte.modules.practice.controller;/**
  * Technique Support: jobyme88.com
  */
 
-import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.result.UpdateResult;
 import com.sj.pte.modules.practice.service.PracticeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @descrption

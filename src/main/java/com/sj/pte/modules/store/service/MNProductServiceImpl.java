@@ -11,13 +11,16 @@ package com.sj.pte.modules.store.service;
  */
 
 import com.sj.pte.modules.store.bean.MNProduct;
+import com.sj.pte.modules.store.bean.MNProductCollect;
+import com.sj.pte.modules.store.bean.MNTrolley;
 import com.sj.pte.modules.store.dao.MNProductDao;
-import com.sj.pte.modules.store.response.model.ProductPreviewResponse;
+import com.sj.pte.modules.store.response.model.ProductBasicInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @descrption
@@ -30,10 +33,11 @@ public class MNProductServiceImpl implements MNProductService {
     MNProductDao mnProductDao;
 
     @Override
-    public ProductPreviewResponse getProductPreviewById(String productId) {
+    public MNProduct getProductPreviewById(String productId) {
         MNProduct mnProduct = mnProductDao.findById(MNProduct.class, productId);
         if (null != mnProduct){
-            return new ProductPreviewResponse(mnProduct);
+           preview(mnProduct);
+           return mnProduct;
         }
         else {
             return null;
@@ -41,16 +45,27 @@ public class MNProductServiceImpl implements MNProductService {
     }
 
     @Override
-    public List<ProductPreviewResponse> getAllProductPreview() {
-        List<ProductPreviewResponse> previews = new ArrayList<>();
+    public List<MNProduct> getAllProductPreview() {
         List<MNProduct> mnProducts = mnProductDao.findAll(MNProduct.class);
-        if (mnProducts.size() > 0){
-            for (MNProduct item: mnProducts
-                 ) {
-                previews.add(new ProductPreviewResponse(item));
-            }
+        if (mnProducts.size() <= 0) return null;
+
+        for (MNProduct mnProduct : mnProducts
+            ) {
+            preview(mnProduct);
         }
-       return previews;
+       return mnProducts;
+    }
+
+    private void preview(MNProduct mnProduct){
+        Map<String, String> videoLesson = mnProduct.getVideoLesson();
+        int i = 0;
+        for (String key: videoLesson.keySet()
+        ) {
+            if (i != 0){
+                videoLesson.replace(key, "");
+            }
+            i++;
+        }
     }
 
     @Override
@@ -61,5 +76,30 @@ public class MNProductServiceImpl implements MNProductService {
     @Override
     public List<MNProduct> getAllProduct() {
         return mnProductDao.findAll(MNProduct.class);
+    }
+
+    @Override
+    public List<ProductBasicInfoResponse> getCollectProduct(String userId) {
+        MNProductCollect collect = mnProductDao.findById(MNProductCollect.class, userId);
+        if (null != collect){
+            return showProductBasicInfo(collect.getProductId());
+        }
+        else return null;
+    }
+
+    @Override
+    public List<ProductBasicInfoResponse> showProductBasicInfo(List<String> productIds){
+        List<ProductBasicInfoResponse> productBasicInfoResponses = new ArrayList<>();
+        try {
+            for (String id: productIds
+            ) {
+                MNProduct mnProduct = mnProductDao.findById(MNProduct.class, id);
+                productBasicInfoResponses.add(new ProductBasicInfoResponse(mnProduct));
+            }
+            return productBasicInfoResponses;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

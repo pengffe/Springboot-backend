@@ -47,26 +47,32 @@ public class QuestionControllerTest {
     }
 
     @Test
+    public void updateRS() throws Exception{
+
+    }
+
+
+    @Test
     public void testController() throws Exception{
         List<String> questionTypeList = new ArrayList<String>() {
             {
                 add("asq");
-                add("fib");
-                add("hiw");
-                add("mcm");
-                add("mcs");
+//                add("fib");
+//                add("hiw");
+//                add("mcm");
+//                add("mcs");
 //                add("ra");
-                add("rfib");
-                add("rl");
-                add("rmcm");
-                add("rmcs");
-                add("ro");
-                add("rs");
-                add("rwfib");
-                add("smw");
-                add("sst");
-                add("we");
-                add("wfd");
+//                add("rfib");
+//                add("rl");
+//                add("rmcm");
+//                add("rmcs");
+//                add("ro");
+//                add("rs");
+//                add("rwfib");
+//                add("smw");
+//                add("sst");
+//                add("we");
+//                add("wfd");
             }
         };
 
@@ -91,9 +97,9 @@ public class QuestionControllerTest {
             updateUpdateUrl = "/" + type + "/" + type + "-1" + "/b/true";
             deleteUrl = saveUrl;
 
-            testSave(saveUrl, questionId);
+//            testSave(saveUrl, questionId);
             testGetAll(getAllUrl, questionId);
-            testGetOne(getOneUrl,questionId);
+//            testGetOne(getOneUrl,questionId);
 //            testUpdateFrequency(updateFrequencyUrl);
 //            testUpdateUpdated(updateUpdateUrl);
 //            testDelete(deleteUrl);

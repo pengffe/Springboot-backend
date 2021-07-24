@@ -10,13 +10,16 @@ package com.sj.pte.modules.store.service;/**
  */
 
 import cn.hutool.core.util.RandomUtil;
+import com.sj.pte.modules.store.bean.MNProduct;
 import com.sj.pte.modules.store.bean.MNTrolley;
 import com.sj.pte.modules.store.bean.MNOrderHistory;
 import com.sj.pte.modules.store.dao.MNOrderDao;
 import com.sj.pte.modules.store.dao.MNProductDao;
+import com.sj.pte.modules.store.response.model.ProductBasicInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +33,8 @@ public class MNOrderServiceImpl implements MNOrderService {
     MNOrderDao mnOrderDao;
     @Autowired
     MNProductDao mnProductDao;
+    @Autowired
+    MNProductServiceImpl mnProductService;
 
     @Override
     public MNTrolley addProductsToTrolley(String userId, List<String> productIds) {
@@ -46,10 +51,10 @@ public class MNOrderServiceImpl implements MNOrderService {
     }
 
     @Override
-    public List<String> showProductsInTrolley(String userId) {
+    public List<ProductBasicInfoResponse> showProductsInTrolley(String userId) {
         MNTrolley mnTrolley = mnOrderDao.findById(MNTrolley.class, userId);
         if (null != mnTrolley){
-            return mnTrolley.getProductId();
+            return mnProductService.showProductBasicInfo(mnTrolley.getProductId());
         }
         else return null;
     }
@@ -71,7 +76,35 @@ public class MNOrderServiceImpl implements MNOrderService {
     }
 
     @Override
-    public List<MNTrolley> showHistoryOrders(String userId) {
-        return null;
+    public List<MNOrderHistory> showHistoryOrders(String userId) {
+        List<MNOrderHistory> orderHistory = mnOrderDao.findAllById(MNOrderHistory.class, userId);
+        if (null == orderHistory || 0 == orderHistory.size()){
+            return null;
+        }
+        else return orderHistory;
+    }
+
+    @Override
+    public List<MNProduct> showPurchasedProducts(String userId) {
+        List<MNOrderHistory> orderHistory = mnOrderDao.findAllById(MNOrderHistory.class, userId);
+        if (null == orderHistory || 0 == orderHistory.size()){
+            return null;
+        }
+
+        List<String> productIds = new ArrayList<>();
+        for (MNOrderHistory item: orderHistory
+             ) {
+            productIds.addAll(item.getProductId());
+        }
+
+        if (0 == productIds.size()){
+            return null;
+        }
+        List<MNProduct> products = new ArrayList<>();
+        for (String id: productIds
+             ) {
+            products.add(mnProductDao.findById(MNProduct.class, id));
+        }
+        return products;
     }
 }

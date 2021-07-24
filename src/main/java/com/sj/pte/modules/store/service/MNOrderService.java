@@ -9,8 +9,10 @@ package com.sj.pte.modules.store.service;/**
  * Technique Support: jobyme88.com
  */
 
+import com.sj.pte.modules.store.bean.MNProduct;
 import com.sj.pte.modules.store.bean.MNTrolley;
 import com.sj.pte.modules.store.bean.MNOrderHistory;
+import com.sj.pte.modules.store.response.model.ProductBasicInfoResponse;
 
 import java.util.List;
 
@@ -21,22 +23,27 @@ import java.util.List;
 public interface MNOrderService {
 
     /**
-     * 用户添加订单到购物车
+     * add product to trolley; 用户添加订单到购物车
      */
     MNTrolley addProductsToTrolley(String userId, List<String>  productIds);
 
     /**
-     * 显示购物车订单清单
+     * display products in trolley; 显示购物车订单清单
      */
-    List<String> showProductsInTrolley(String userId);
+    List<ProductBasicInfoResponse> showProductsInTrolley(String userId);
 
     /**
-     *  更新订单信息，是否已购买
+     *  update order info, whether is purchased; 更新订单信息，是否已购买
      */
     MNOrderHistory checkout(String userId, List<String> productIds);
 
     /**
-     * 显示历史订单
+     * display order history; 显示订单历史
      */
-    List<MNTrolley> showHistoryOrders(String userId);
+    List<MNOrderHistory> showHistoryOrders(String userId);
+
+    /**
+     * display all purchased products for user； 显示用户所有购买过的课程
+     */
+    List<MNProduct> showPurchasedProducts(String userId);
 }

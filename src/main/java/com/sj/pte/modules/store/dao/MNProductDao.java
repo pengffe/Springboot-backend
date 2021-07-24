@@ -50,17 +50,10 @@ public class MNProductDao {
         return mongoTemplate.findAll(tClass);
     }
 
-    public UpdateResult updatePathById(String productId, String productPath){
-        Query query = new Query(Criteria.where("productId").is(productId));
-        Update update = new Update().addToSet("productPath", productPath);
+    public UpdateResult updateVideoLessonById(MNProduct mnProduct){
+        Query query = new Query(Criteria.where("productId").is(mnProduct.getProductId()));
+        Update update = new Update().set("videoLesson", mnProduct.getVideoLesson());
 
-        return mongoTemplate.updateFirst(query, update, MNProduct.class);
-    }
-
-    public UpdateResult updateChapterById(String productId, String productChapterName){
-        Query query = new Query(Criteria.where("productId").is(productId));
-        Update update = new Update().addToSet("productChapterName", productChapterName);
-
-        return mongoTemplate.updateFirst(query, update, MNProduct.class);
+        return mongoTemplate.upsert(query, update, MNProduct.class);
     }
 }

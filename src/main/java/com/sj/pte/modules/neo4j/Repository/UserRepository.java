@@ -1,5 +1,5 @@
-package com.sj.pte.modules.store.bean;/**
- * Created by TUTEHUB on 2021-07-12 14:27.
+package com.sj.pte.modules.neo4j.Repository;/**
+ * Created by TUTEHUB on 2021-07-23 14:31.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -9,22 +9,13 @@ package com.sj.pte.modules.store.bean;/**
  * Technique Support: jobyme88.com
  */
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.List;
+import com.sj.pte.modules.neo4j.entity.User;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
 /**
  * @descrption
  */
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Document("MNProductCollect")
-public class MNProductCollect {
-    private String userId;
-    private List<String> productId;
+public interface UserRepository extends Neo4jRepository<User, Long> {
+
 }

@@ -15,8 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @descrption
@@ -29,7 +29,8 @@ import java.util.List;
 public class MNProduct extends MNPost {
     private String productId;
     private String productName;
+    private String description;
+    //<chapter name: video path>
+    private Map<String, String> videoLesson = new HashMap<>();
     private String price;
-    private List<String> productChapterName = new ArrayList<>();
-    private List<String> productPath = new ArrayList<>();
 }

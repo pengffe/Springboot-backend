@@ -9,15 +9,18 @@ package com.sj.pte.modules.store.controller;/**
  * Technique Support: jobyme88.com
  */
 
-import com.sj.pte.modules.store.bean.MNTrolley;
+import com.sj.pte.modules.store.bean.MNProduct;
 import com.sj.pte.modules.store.bean.MNOrderHistory;
 import com.sj.pte.modules.store.request.model.CheckoutRequest;
+import com.sj.pte.modules.store.response.model.OrderHistoryResponse;
 import com.sj.pte.modules.store.service.MNOrderServiceImpl;
+import com.sj.pte.modules.store.service.MNProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,34 +33,53 @@ public class MNOrderController {
 
     @Autowired
     MNOrderServiceImpl mnOrderService;
-
-    @PostMapping("")
-    public ResponseEntity<String> addTrolley(@RequestBody MNTrolley mnTrolley){
-        MNTrolley mnTrolleyResult = mnOrderService.addProductsToTrolley(mnTrolley.getUserId(), mnTrolley.getProductId());
-        if (null != mnTrolleyResult){
-            return new ResponseEntity<>("SUCCESS TO ADD", HttpStatus.OK);
-        }
-        else return new ResponseEntity<>("FAIL TO ADD", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<List> showTrolley(@PathVariable String userId){
-        List<String> mnProductIds = mnOrderService.showProductsInTrolley(userId);
-        if (null != mnProductIds){
-            System.out.println("null");
-            return new ResponseEntity<>(mnProductIds, HttpStatus.OK);
-        }
-        else return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-    }
+    
+    @Autowired
+    MNProductServiceImpl mnProductService;
 
     // 更新订单状态，是否已购买
-    @PutMapping("")
-    public ResponseEntity<MNOrderHistory> checkoutOrder(@RequestBody CheckoutRequest checkoutRequest){
+    @PostMapping("")
+    public ResponseEntity<?> checkoutOrder(@RequestBody CheckoutRequest checkoutRequest){
         MNOrderHistory checkout = mnOrderService.checkout(checkoutRequest.getUserId(), checkoutRequest.getProductId());
         if (null != checkout){
             return new ResponseEntity<>(checkout, HttpStatus.OK);
         }
-        else return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        else return new ResponseEntity<>("FAIL TO CHECKOUT", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Obtain purchased products for user
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getAllPurchasedProduct(@PathVariable String userId){
+        List<MNProduct> products = mnOrderService.showPurchasedProducts(userId);
+        if (null != products){
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("NO PURCHASED PRODUCTS", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<?> getOrderHistory(@PathVariable String userId){
+        List<OrderHistoryResponse> orderHistory = new ArrayList<>();
+        OrderHistoryResponse orderHistoryResponse = new OrderHistoryResponse();
+
+        try {
+            List<MNOrderHistory> orders = mnOrderService.showHistoryOrders(userId);
+            for (MNOrderHistory order: orders
+                 ) {
+                orderHistoryResponse.setOrderId(order.getOrderId());
+                List<String> productIds = order.getProductId();
+                for (String id: productIds
+                     ) {
+                    MNProduct product = mnProductService.getProductById(id);
+                    orderHistoryResponse.getProductInfo().put(product.getProductName(), product.getDescription());
+                }
+                orderHistory.add(orderHistoryResponse);
+            }
+            return new ResponseEntity<>(orderHistory, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("NO ORDER HISTORY", HttpStatus.NOT_FOUND);
+        }
     }
 }

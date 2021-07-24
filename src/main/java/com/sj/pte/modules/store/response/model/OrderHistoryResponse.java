@@ -1,5 +1,5 @@
-package com.sj.pte.modules.store.bean;/**
- * Created by TUTEHUB on 2021-07-12 14:27.
+package com.sj.pte.modules.store.response.model;/**
+ * Created by TUTEHUB on 2021-07-14 12:35.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -12,9 +12,9 @@ package com.sj.pte.modules.store.bean;/**
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @descrption
@@ -23,8 +23,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("MNProductCollect")
-public class MNProductCollect {
-    private String userId;
-    private List<String> productId;
+public class OrderHistoryResponse {
+    private String orderId;
+    private Map<String, String> productInfo = new HashMap<>();
 }

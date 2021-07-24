@@ -46,6 +46,11 @@ public class MNOrderDao {
         return mongoTemplate.findOne(query, tCLass);
     }
 
+    public <T> List<T> findAllById(Class<T> tCLass, String userId) {
+        Query query = new Query(Criteria.where("userId").is(userId));
+        return mongoTemplate.find(query, tCLass);
+    }
+
     public <T> UpdateResult updateProductIdById(Class<T> tCLass, String userId, List<String> productId, boolean option){
         Query query = new Query(Criteria.where("userId").is(userId));
         Update update = new Update();

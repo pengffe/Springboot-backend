@@ -1,5 +1,5 @@
 package com.sj.pte.modules.store.response.model;/**
- * Created by TUTEHUB on 2021-07-12 15:00.
+ * Created by TUTEHUB on 2021-07-15 13:50.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -10,31 +10,31 @@ package com.sj.pte.modules.store.response.model;/**
  */
 
 import com.sj.pte.modules.store.bean.MNProduct;
+import com.sj.pte.modules.store.dao.MNProductDao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @descrption to display the preview of the products, only first video can play, others only display the video name
+ * @descrption
  */
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductPreviewResponse {
+public class ProductBasicInfoResponse {
     private String productId;
     private String productName;
-    private String price;
-    private List<String> preview = new ArrayList<>();
+    private String author;
 
-    public ProductPreviewResponse(MNProduct mnProduct){
+
+    public ProductBasicInfoResponse(MNProduct mnProduct){
         this.productId = mnProduct.getProductId();
         this.productName = mnProduct.getProductName();
-        this.price = mnProduct.getPrice();
-        this.preview.add(mnProduct.getProductPath().get(0));
-        this.preview.addAll(mnProduct.getProductChapterName());
+        this.author = mnProduct.getAuthor();
     }
 }

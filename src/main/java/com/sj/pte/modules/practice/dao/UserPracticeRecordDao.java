@@ -10,7 +10,6 @@ package com.sj.pte.modules.practice.dao;/**
  */
 
 import com.mongodb.client.result.UpdateResult;
-import com.sj.pte.modules.practice.bean.MNUserCollectRecord;
 import com.sj.pte.modules.practice.bean.MNUserPracticeRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

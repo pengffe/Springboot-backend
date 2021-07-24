@@ -176,32 +176,32 @@ public class MNQuestionController {
         return uploadFileService.saveFileToDisk(questionId, file, null);
     }
 
-//    @PatchMapping(value = "/{type}/{id}")
-//    public UpdateResult updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
-//                                        @PathVariable String type,
-//                                        @PathVariable String id){
-//        String questionId = type + "-" + id;
-//        return questionService.updateById(checkService.checkType(type).getClass(), questionId, mnQuestionRequest);
-//    }
-
-    @PatchMapping(path = "/{type}/{id}", consumes = "application/json-patch+json")
-    public ResponseEntity update(@PathVariable String type,
-                                              @PathVariable String id,
-                                              @RequestBody JsonPatch patch){
+    @PatchMapping(value = "/{type}/{id}")
+    public UpdateResult updateAttribute(@RequestBody MNQuestionRequest mnQuestionRequest,
+                                        @PathVariable String type,
+                                        @PathVariable String id){
         String questionId = type + "-" + id;
-        try {
-            MNQuestion mnQuestion = questionService.findById(checkService.checkType(questionId).getClass(), questionId);
-            if (null == mnQuestion){
-                return new ResponseEntity<>("QUESTION NOT FOUND", HttpStatus.NOT_FOUND);
-            }
-
-            MNQuestion questionPatched = applyPatchToQuestion(patch, mnQuestion);
-            UpdateResult update = questionService.update(questionPatched);
-            return new ResponseEntity<>(update, HttpStatus.OK);
-        } catch (JsonPatchException | JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return questionService.updateById(checkService.checkType(type).getClass(), questionId, mnQuestionRequest);
     }
+
+//    @PatchMapping(path = "/{type}/{id}", consumes = "application/json-patch+json")
+//    public ResponseEntity update(@PathVariable String type,
+//                                              @PathVariable String id,
+//                                              @RequestBody JsonPatch patch){
+//        String questionId = type + "-" + id;
+//        try {
+//            MNQuestion mnQuestion = questionService.findById(checkService.checkType(questionId).getClass(), questionId);
+//            if (null == mnQuestion){
+//                return new ResponseEntity<>("QUESTION NOT FOUND", HttpStatus.NOT_FOUND);
+//            }
+//
+//            MNQuestion questionPatched = applyPatchToQuestion(patch, mnQuestion);
+//            UpdateResult update = questionService.update(questionPatched);
+//            return new ResponseEntity<>(update, HttpStatus.OK);
+//        } catch (JsonPatchException | JsonProcessingException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 
     private MNQuestion applyPatchToQuestion(JsonPatch patch, MNQuestion targetQuestion) throws JsonPatchException, JsonProcessingException {
         JsonNode patched = patch.apply(objectMapper.convertValue(targetQuestion, JsonNode.class));

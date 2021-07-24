@@ -293,13 +293,12 @@ public class UploadFileService {
             String productId = mnProduct.getProductId();
             if (null == productId){
                 mnProduct.setProductId(RandomUtil.randomString(8));
-                mnProduct.getProductPath().add(URLPath);
-                mnProduct.getProductChapterName().add(chapterName);
+                mnProduct.getVideoLesson().put(chapterName, URLPath);
                 result = mnProductDao.save(mnProduct);
             }
             else {
-                mnProductDao.updateChapterById(productId,chapterName);
-                mnProductDao.updatePathById(productId, URLPath);
+                mnProduct.getVideoLesson().put(chapterName, URLPath);
+                mnProductDao.updateVideoLessonById(mnProduct);
                 result = mnProductDao.findById(MNProduct.class, productId);
             }
             json.put("Result", result.toString());

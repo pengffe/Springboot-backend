@@ -4,3 +4,10 @@ server:
     encoding:
       force: true
       charset: UTF-8
+
+spring:
+  data:
+    neo4j:
+      uri: bolt://localhost:7687
+      username: neo4j
+      password: neo4j

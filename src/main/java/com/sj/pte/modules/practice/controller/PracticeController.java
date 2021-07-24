@@ -69,6 +69,11 @@ public class PracticeController {
         return practiceServiceImpl.deletePracticeById(id);
     }
 
+    @PutMapping("/{userId}/{questionId}")
+    public UpdateResult addPracticedQuestionId(@PathVariable String userId, @PathVariable String questionId){
+        return practiceServiceImpl.savePracticeQuestionId(userId, questionId);
+    }
+
     @PutMapping("/{userId}")
     public UpdateResult resetPracticeRecordByUserId(@PathVariable String userId){
         return practiceServiceImpl.resetPracticeRecord(userId);
