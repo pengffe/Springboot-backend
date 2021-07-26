@@ -1,8 +1,5 @@
-package com.sj.pte.modules.neo4j.entity;
-
-
-/**
- * Created by TUTEHUB on 2021-07-22 15:46.
+package com.sj.pte.modules.neo4j.entity;/**
+ * Created by TUTEHUB on 2021-07-26 15:09.
  * Copyright © 2021 TUTEHUB. All rights reserved.
  * ------------------------
  * Non-disclosure Terms
@@ -12,43 +9,45 @@ package com.sj.pte.modules.neo4j.entity;
  * Technique Support: jobyme88.com
  */
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @descrption
  */
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
-import org.springframework.data.neo4j.core.schema.Relationship.Direction;
-
-import java.util.ArrayList;
-import java.util.List;
-
 @Node
 @Data
 @NoArgsConstructor
-public class User {
+public class MNWord {
+
     @Id
+    @GeneratedValue
     private long id;
+    private String title;
+    private String soundMark;
+    private String explanation;
+    private List<String> examples;
 
-    private String name;
+    @Relationship(type = "derive", direction = Relationship.Direction.INCOMING)
+    private Set<MNWord> derive;
 
-
-
-    public User(long id, String name){
-        this.id = id;
-        this.name = name;
+    public void derive(MNWord mnWord) {
+        if (derive == null) {
+            derive = new HashSet<>();
+        }
+        derive.add(mnWord);
     }
 
-    @Relationship(type = "FOLLOW", direction = Direction.OUTGOING)
-    private List<User> follow = new ArrayList<>();
-
-    public void follow(User User) {
-        follow.add(User);
+    public MNWord(String title){
+        this.title = title;
     }
-
-//    @Relationship(type = "FRIEND_IN", direction = Direction.INCOMING)
-//    private List<User> followed = new ArrayList<>();
 }

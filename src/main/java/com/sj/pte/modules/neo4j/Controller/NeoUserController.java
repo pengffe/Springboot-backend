@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @descrption
@@ -32,21 +33,40 @@ public class NeoUserController {
         return userRepository.findAll();
     }
 
-    @PostMapping("/user/{username}")
-    public User saveUsers(@PathVariable String username){
-        System.out.println("neo4j");
-//        User user2 = new User();
-//        user2.setName("bbc");
+    @PostMapping("/user/init")
+    public void saveUsers(){
+        System.out.println("neo4j: init");
 
-        User user = new User();
-        user.setName(username);
-//        user.getFollow().add(user2);
-        return userRepository.save(user);
+        /**
+         * 创建三个用户
+         */
+        User phil = new User();
+        phil.setId(1L);
+        phil.setName("phil");
+        userRepository.save(phil);
 
+        User bbc = new User();
+        bbc.setId(2L);
+        bbc.setName("bbc");
+        userRepository.save(bbc);
+
+        User feng = new User();
+        feng.setId(3L);
+        feng.setName("feng");
+        userRepository.save(feng);
+
+        phil.follow(bbc);
+        userRepository.save(phil);
+
+        feng.follow(bbc);
+        userRepository.save(feng);
     }
 
-//    @PutMapping("/user/{username}")
-//    public String addFriend(@PathVariable String username){
-//        userRepository.
-//    }
+    @PutMapping("/user/{id}")
+    public void addFriend(@PathVariable Long id){
+        Optional<User> user = userRepository.findById(id);
+        user.get().follow(new User(4L, "peng"));
+//        user.get().follow(userRepository.findById(3L).get());
+        userRepository.save(user.get());
+    }
 }
