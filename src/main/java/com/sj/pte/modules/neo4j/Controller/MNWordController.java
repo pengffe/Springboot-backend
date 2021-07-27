@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * @descrption
@@ -33,27 +33,96 @@ public class MNWordController {
     @PostMapping("/{word}")
     public ResponseEntity<?> saveWord(@PathVariable String word){
         MNWord mnWord = new MNWord(word);
-        wordRepository.save(mnWord);
-        return checkResult(mnWord);
+        MNWord save = wordRepository.save(mnWord);
+        return checkReturn(save);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getDerivedWord(@PathVariable Long id){
-        List<MNWord> childList = wordRepository.findChildList(id);
-        return checkResult(childList);
+    /**
+     *  create relation from start to end
+     */
+    @PostMapping("/{start}/{end}")
+    public ResponseEntity<?> createRelation(@PathVariable String start, @PathVariable String end){
+        MNWord startNode = wordRepository.findMNWordByTitle(start);
+        if (null != startNode){
+            MNWord endNode = wordRepository.findMNWordByTitle(end);
+            if (null != endNode){
+                startNode.derive(endNode);
+                MNWord save = wordRepository.save(startNode);
+                return checkReturn(save);
+            }
+            else {
+                MNWord mnWord = new MNWord(end);
+                startNode.derive(wordRepository.save(mnWord));
+                MNWord save = wordRepository.save(startNode);
+                return checkReturn(save);
+            }
+
+        }
+        else return new ResponseEntity<>("FAIL TO ADD RELATION", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PutMapping("/{id}/{did}")
-    public void addRelation(@PathVariable Long id, @PathVariable Long did){
-        Optional<MNWord> word = wordRepository.findById(did);
-        word.get().derive(wordRepository.findById(id).get());
-        wordRepository.save(word.get());
+
+    @GetMapping("/{title}")
+    public ResponseEntity<?> getWord(@PathVariable String title){
+        MNWord mnWordByTitle = wordRepository.findMNWordByTitle(title);
+        return checkReturn(mnWordByTitle);
     }
 
-    private <T> ResponseEntity<?> checkResult(T t){
+    /**
+     * obtain direct parent node
+     */
+    @GetMapping("parent/{title}")
+    public ResponseEntity<?> getParent(@PathVariable String title){
+        MNWord parent = wordRepository.findParent(title);
+        return checkReturn(parent);
+    }
+
+    @GetMapping("parents/{title}")
+    public ResponseEntity<?> getParents(@PathVariable String title){
+        List<MNWord> parentList = wordRepository.findParentList(title);
+        return checkReturn(parentList);
+    }
+
+    /**
+     * obtain all children nodes
+     */
+    @GetMapping("/children/{title}")
+    public ResponseEntity<?> getDerivedWords(@PathVariable String title){
+        List<MNWord> childList = wordRepository.findChildList(title);
+        return checkReturn(childList);
+    }
+
+    @PutMapping("/{title}/{newTitle}")
+    public ResponseEntity<?> updateWord(@PathVariable String title, @PathVariable String newTitle){
+        MNWord mnWord = wordRepository.updateWordByTitle(title, newTitle);
+        return checkReturn(mnWord);
+    }
+
+    @DeleteMapping("/{start}/{end}")
+    public ResponseEntity<?>  deleteRelation(@PathVariable String start, @PathVariable String end){
+        wordRepository.deleteRelationTo(start, end);
+        Set<MNWord> relation = wordRepository.findRelation(start, end);
+        return checkDelete(relation);
+    }
+
+    @DeleteMapping("node/{start}/{end}")
+    public ResponseEntity<?>  deleteNodeAndRelation(@PathVariable String start, @PathVariable String end){
+        wordRepository.deleteWordAndRelation(start, end);
+        Set<MNWord> relation = wordRepository.findRelation(start, end);
+        return checkDelete(relation);
+    }
+
+    private <T> ResponseEntity<?> checkReturn(T t){
         if (null != t){
             return new ResponseEntity<>(t, HttpStatus.OK);
         }
-        else return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+        else return new ResponseEntity<>("OPRATION FAIL OR NO DATA RETURN", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private <T> ResponseEntity<?> checkDelete(Set<T> t){
+        if (null == t || 0 == t.size()){
+            return new ResponseEntity<>("SUCCESS TO DELETE", HttpStatus.OK);
+        }
+        else return new ResponseEntity<>("FAIL TO DELETE", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

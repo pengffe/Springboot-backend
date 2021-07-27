@@ -37,7 +37,11 @@ public class MNWord {
     private String explanation;
     private List<String> examples;
 
-    @Relationship(type = "derive", direction = Relationship.Direction.INCOMING)
+
+    /**
+     * this word is a origin from which others are derived
+     */
+    @Relationship(type = "derive", direction = Relationship.Direction.OUTGOING)
     private Set<MNWord> derive;
 
     public void derive(MNWord mnWord) {
