@@ -9,6 +9,7 @@ package com.sj.pte.modules.neo4j.entity;/**
  * Technique Support: jobyme88.com
  */
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -27,6 +28,7 @@ import java.util.Set;
 @Node
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class MNWord {
 
     @Id
@@ -49,6 +51,15 @@ public class MNWord {
             derive = new HashSet<>();
         }
         derive.add(mnWord);
+    }
+
+    public MNWord(MNWord mnWord){
+        this.id = mnWord.id;
+        this.title = mnWord.title;
+        this.soundMark = mnWord.soundMark;
+        this.explanation = mnWord.explanation;
+        this.examples = mnWord.examples;
+        this.derive = mnWord.derive;
     }
 
     public MNWord(String title){
