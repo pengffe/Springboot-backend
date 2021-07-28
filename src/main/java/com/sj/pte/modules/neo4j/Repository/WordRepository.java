@@ -66,7 +66,7 @@ public interface WordRepository extends Neo4jRepository<MNWord, Long> {
     void deleteRelationTo(String start, String end);
 
     // delete relation as well as node
-    @Query("Match (x:MNWord{title:$start})-[re:derive]->(y:MNWord{title:$end}) delete x,re,y")
+    @Query("Match (x:MNWord{title:$start})-[re:derive]->(y:MNWord{title:$end}) delete re,y")
     void deleteWordAndRelation(String start, String end);
 
     @Query("Match (x:MNWord{title:$title}) delete x")
