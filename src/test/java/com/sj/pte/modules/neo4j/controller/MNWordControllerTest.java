@@ -47,7 +47,7 @@ public class MNWordControllerTest {
 
     @Test
     public void saveWordTest() throws Exception{
-        String wordTitle = "persevere";
+        String wordTitle = "friend";
         String saveApi = "/dic/" + wordTitle;
 
         String contentAsString = this.mockMvc
@@ -61,34 +61,44 @@ public class MNWordControllerTest {
     @Test
     public void saveVocabularyTest() throws Exception{
         String wordTitle = "persist";
-        String saveApi = "/dic/";
+        String saveApi = "/dic";
 
-
-        MNWord word = new MNWord(1L, "persist", "persist", "坚持；固执", new ArrayList<>(), new HashSet<>());
+        MNWord word = new MNWord(1L, wordTitle, "persist", "坚持；固执", new ArrayList<>(), new HashSet<>());
         ObjectMapper objectMapper = new ObjectMapper();
         String requestString = objectMapper.writeValueAsString(word);
 
-        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post(saveApi)
-                .content(requestString)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        System.out.println(contentAsString);
-
+        try{
+            //判断是否已存在
+            mockMvc.perform(MockMvcRequestBuilders.get(saveApi + "/" + wordTitle))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            mockMvc.perform(MockMvcRequestBuilders.post(saveApi)
+                    .content(requestString)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+        }
+        catch (Exception e){
+            String contentAsString = mockMvc.perform(MockMvcRequestBuilders.post(saveApi)
+                    .content(requestString)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andReturn().getResponse().getContentAsString();
+            System.out.println(contentAsString);
+        }
     }
 
     @Test
     public void createRelationTest() throws Exception{
         List<String> startNodes = new ArrayList<>();
-        startNodes.add("persevere");
-        startNodes.add("per");
-        String end = "perseveringly";
+        startNodes.add("persist");
+        startNodes.add("origin");
+        startNodes.add("friend");
+        String end = "friends";
 
         for (String node: startNodes
              ) {
             String api = "/dic/" + node + "/" + end;
             ResultActions perform = this.mockMvc.perform(MockMvcRequestBuilders.post(api));
-            if (node.equals("persist")){
+            if (!node.equals("persevere")){
                 perform.andExpect(MockMvcResultMatchers.status().isOk());
             }
             else {
@@ -232,7 +242,19 @@ public class MNWordControllerTest {
     }
 
     @Test
-    public void deleteNodeTest(){
+    public void deleteNodeTest() throws Exception {
+        List<String> startNodes = new ArrayList<>();
+        startNodes.add("friends");
+//        startNodes.add("friend");
 
+
+        for (String node: startNodes
+        ) {
+            String api = "/dic/" + node;
+
+            ResultActions perform = this.mockMvc.perform(MockMvcRequestBuilders.delete(api));
+            perform.andExpect(MockMvcResultMatchers.status().isOk());
+            System.out.println(perform.andReturn().getResponse().getContentAsString());
+        }
     }
 }

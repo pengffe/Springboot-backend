@@ -91,6 +91,7 @@ public class MNWordController {
             }
             else return new ResponseEntity<>("PARENT NODE DOES NOT EXIST", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            System.out.println("fail");
             e.printStackTrace();
             return new ResponseEntity<>("FAIL TO ADD RELATION", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -176,6 +177,11 @@ public class MNWordController {
         }
     }
 
+    /**
+     * 删除end节点，并指明直系父节点（唯一）并删除关系
+     * @param start
+     * @param end
+     */
     @DeleteMapping("node/{start}/{end}")
     public ResponseEntity<?>  deleteNodeAndRelation(@PathVariable String start, @PathVariable String end){
         Set<MNWord> relation = null;
@@ -192,6 +198,19 @@ public class MNWordController {
     @DeleteMapping("/{title}")
     public ResponseEntity<?>  deleteNode(@PathVariable String title){
         try {
+            // delete all relations to parents
+            List<MNWord> parentList = wordRepository.findParentList(title);
+            for (MNWord parent: parentList
+                 ) {
+                wordRepository.deleteRelationTo(parent.getTitle(), title);
+            }
+            // delete all relations to children
+            List<MNWord> childList = wordRepository.findChildList(title);
+            for (MNWord child: childList
+            ) {
+                wordRepository.deleteRelationTo(title, child.getTitle());
+            }
+
             wordRepository.deleteWordByTitle(title);
             return new ResponseEntity<>(title, HttpStatus.OK);
         } catch (Exception e) {
