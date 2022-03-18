@@ -12,7 +12,7 @@
 	<artifactId>pte</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>pte</name>
-	<description>Backend for Cow PTE, using MongoDB, Neo4j, MQTT</description>
+	<description>using MongoDB, Neo4j, MQTT</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
